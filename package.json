@@ -4,17 +4,24 @@
   "version": "0.0.1",
   "type": "module",
   "workspaces": [
-    "packages/*"
+    "desktop",
+    "server",
+    "shared",
+    "db"
   ],
   "scripts": {
-    "dev": "turbo run dev",
-    "build": "turbo run build",
-    "preview": "turbo run preview"
+    "start": "npm run dev",
+    "dev": "concurrently -k \"npm:dev:server\" \"npm:dev:desktop\"",
+    "dev:desktop": "npm --prefix desktop run dev",
+    "dev:server": "npm --prefix server run dev",
+    "electron:dev": "npm --prefix desktop run dev",
+    "build": "npm --prefix shared run build && npm --prefix server run build && npm --prefix desktop run build",
+    "preview": "npm --prefix desktop run preview"
   },
   "devDependencies": {
     "@types/express": "^5.0.6",
     "@types/node": "^25.4.0",
-    "turbo": "^1.12.4",
+    "concurrently": "^9.2.1",
     "typescript": "^5.9.3"
   },
   "dependencies": {

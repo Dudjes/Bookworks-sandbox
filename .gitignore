@@ -5,3 +5,4 @@ dist-electron/
 .env.local
 *.log
 .DS_Store
+.turbo/
