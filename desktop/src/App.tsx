@@ -1,7 +1,18 @@
+import { BrowserRouter, Routes, Route } from "react-router-dom";
+import Auth from "./pages/auth";
+import Invoices from "./pages/invoices";
+
 export default function App() {
   return (
-    <div style={{ width: '100%', height: '100vh', background: 'white' }}>
-      {/* Your app goes here */}
-    </div>
-  )
+    <BrowserRouter>
+      <div className="layout">
+        <main className="content">
+          <Routes>
+            <Route path="/" element={<Auth />} />
+            <Route path="/invoices" element={<Invoices/>}/>
+          </Routes>
+        </main>
+      </div>
+    </BrowserRouter>
+  );
 }

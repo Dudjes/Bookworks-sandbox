@@ -1,0 +1,272 @@
+@import url("https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap");
+
+* {
+  color: white;
+}
+
+.app {
+  width: 100%;
+  height: 100vh;
+  overflow: hidden;
+  font-family: "Roboto", sans-serif;
+  background: linear-gradient(124deg, rgba(26, 26, 138, 1) 61%, rgba(0, 212, 255, 1) 100%);
+}
+
+.mainContainer {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  max-width: 90rem;
+  height: 100%;
+  margin: 0 auto;
+  padding: 2rem 3.5rem;
+  box-sizing: border-box;
+}
+
+.header {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  gap: 1rem;
+  flex-shrink: 0;
+}
+
+.body {
+  flex: 1;
+  display: grid;
+  grid-template-columns: minmax(30rem, 1fr) minmax(32rem, 38rem);
+  align-items: center;
+  gap: 4rem;
+  min-height: 0;
+}
+
+.textarea {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-self: center;
+}
+
+.textheader h1 {
+  font-size: clamp(2rem, 2vw + 2rem, 2.5rem);
+  line-height: 1.15;
+  max-width: 32rem;
+}
+
+.textheader p {
+  margin-top: 1rem;
+  color: lightgray;
+  font-size: 1.05rem;
+  line-height: 1.5;
+  max-width: 34rem;
+}
+
+.itemsContainer {
+  margin-top: 2.5rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1.75rem;
+}
+
+.itemContainer {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  gap: 1rem;
+}
+
+.itemIcon {
+  display: flex;
+  width: 3.25rem;
+  height: 3.25rem;
+  flex-shrink: 0;
+  background-color: rgba(92, 92, 213, 0.5);
+  border-radius: 12px;
+  align-items: center;
+  justify-content: center;
+}
+
+.itemText {
+  display: flex;
+  flex-direction: column;
+  gap: 0.2rem;
+}
+
+.itemText strong {
+  font-size: 1.25rem;
+  font-weight: 700;
+}
+
+.itemText p {
+  color: lightgray;
+  font-size: 1rem;
+  line-height: 1.45;
+}
+
+/* form */
+
+.formContainer {
+  width: 100%;
+  max-width: 38rem;
+  justify-self: end;
+  align-self: center;
+}
+
+.tabSwitcher {
+  display: flex;
+  flex-direction: row;
+  width: 100%;
+  height: 3rem;
+  background-color: rgba(255, 255, 255, 0.15);
+  border-radius: 12px;
+  align-items: center;
+  padding: 0.25rem;
+  box-sizing: border-box;
+  margin-top: 1rem;
+}
+
+.tabBtn {
+  flex: 1;
+  height: 100%;
+  border: none;
+  background: transparent;
+  border-radius: 10px;
+  cursor: pointer;
+  font-size: 1rem;
+  font-weight: 500;
+  color: rgba(255, 255, 255, 0.75);
+}
+
+.tabBtn.active {
+  background-color: white;
+  color: #1a1a8a;
+  font-weight: 700;
+}
+
+/* login form */
+.loginForm {
+  width: 100%;
+  min-height: 22rem;
+  background-color: whitesmoke;
+  margin-top: 1rem;
+  border-radius: 20px;
+  padding: 1.75rem;
+  box-sizing: border-box;
+  box-shadow: 0 1rem 2rem rgba(0, 0, 0, 0.12);
+}
+
+.loginForm,
+.loginForm * {
+  color: black;
+}
+
+.formText {
+  display: flex;
+  flex-direction: column;
+}
+
+.formText p {
+  margin-top: 0.4rem;
+  color: #4b5563;
+}
+
+.formInfo {
+  display: flex;
+  flex-direction: column;
+  gap: 0.45rem;
+  margin-top: 1rem;
+}
+
+.formInfo input {
+  width: 100%;
+  height: 2.75rem;
+  padding: 0 0.9rem;
+  border-radius: 12px;
+  border: 1px solid #d3d8e5;
+  background-color: #ffffff;
+  color: #111827;
+  font-size: 0.95rem;
+  outline: none;
+  box-sizing: border-box;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.formInfo input:hover {
+  border-color: #b8c1d6;
+}
+
+.formInfo input:focus {
+  border-color: #1a1a8a;
+  box-shadow: 0 0 0 3px rgba(26, 26, 138, 0.15);
+}
+
+.formInfo input::placeholder {
+  color: #9aa3b2;
+}
+
+.passwordField {
+  position: relative;
+}
+
+.passwordField input {
+  padding-right: 2.75rem;
+}
+
+.passwordToggle {
+  position: absolute;
+  right: 0.75rem;
+  top: 50%;
+  transform: translateY(-50%);
+  border: none;
+  background: transparent;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
+  cursor: pointer;
+  color: #6b7280;
+}
+
+.passwordToggle:hover {
+  color: #1a1a8a;
+}
+
+.passwordToggle:focus-visible {
+  outline: 2px solid rgba(26, 26, 138, 0.35);
+  outline-offset: 2px;
+  border-radius: 6px;
+}
+
+.submitBtn {
+  margin-top: 1.5rem;
+  width: 100%;
+  height: 2.9rem;
+  border: 2px solid black;
+  border-radius: 10px;
+  background-color: darkblue;
+  color: white;
+  font-size: 0.95rem;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+/* register form */
+.registerForm {
+  width: 100%;
+  min-height: 26rem;
+  background-color: whitesmoke;
+  margin-top: 1rem;
+  border-radius: 20px;
+  padding: 1.75rem;
+  box-sizing: border-box;
+  box-shadow: 0 1rem 2rem rgba(0, 0, 0, 0.12);
+}
+
+.registerForm,
+.registerForm * {
+  color: black;
+}
+
+.registerForm .submitBtn {
+  color: white;
+}

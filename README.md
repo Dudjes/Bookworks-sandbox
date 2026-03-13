@@ -8,7 +8,6 @@ Professional accounting application for small businesses.
 packages/
 ├── desktop/        # Electron + React UI
 ├── server/         # Express backend
-├── shared/         # Shared types & utilities
 └── db/            # Database schemas & migrations
 ```
 
