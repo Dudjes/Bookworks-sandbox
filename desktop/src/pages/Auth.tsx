@@ -26,9 +26,18 @@ export default function Auth() {
     navigate("/invoices");
   };
 
-  const handleRegister = () => {
-    // TODO: make the method
-    navigate("/invoices");
+  const handleRegister = async () => {
+    try {
+      if (window.api?.invoke) {
+        await window.api.invoke("auth:registerUser", username, password, email, "user");
+      } else {
+        console.warn("Electron API bridge is unavailable. Registration is skipped in browser-only dev mode.");
+      }
+
+      navigate("/invoices");
+    } catch (error) {
+      console.error(error);
+    }
   };
 
   return (

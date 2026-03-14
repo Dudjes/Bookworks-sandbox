@@ -10,9 +10,10 @@
     "prisma:studio": "prisma studio"
   },
   "dependencies": {
-    "@prisma/client": "^6.5.0"
+    "@prisma/client": "^7.5.0",
+    "dotenv": "^16.6.1"
   },
   "devDependencies": {
-    "prisma": "^6.5.0"
+    "prisma": "^7.5.0"
   }
 }

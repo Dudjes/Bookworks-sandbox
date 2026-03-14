@@ -1,6 +1,12 @@
 import { app, BrowserWindow, ipcMain, Menu } from "electron";
 import path from "path";
-import "./database.cjs";
+import { fileURLToPath } from "url";
+import { existsSync } from "fs";
+import { ensureDatabaseSchema } from "./database.js";
+import * as auth from "./database/auth.js";
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 
 const isDev = process.env.NODE_ENV === "development";
 if (isDev) {
@@ -10,6 +16,17 @@ if (isDev) {
 
 let mainWindow: BrowserWindow | null = null;
 
+const resolvePreloadPath = () => {
+  const candidates = ["preload.cjs", "preload.js", "preload.mjs"];
+
+  for (const fileName of candidates) {
+    const fullPath = path.join(__dirname, fileName);
+    if (existsSync(fullPath)) return fullPath;
+  }
+
+  throw new Error("Preload file not found in dist-electron output.");
+};
+
 const createWindow = () => {
   mainWindow = new BrowserWindow({
     minWidth: 1200,
@@ -17,7 +34,9 @@ const createWindow = () => {
     width: 1200,
     height: 800,
     webPreferences: {
-      preload: path.join(__dirname, "preload.cjs"),
+      preload: resolvePreloadPath(),
+      contextIsolation: true,
+      nodeIntegration: false,
     },
   });
 
@@ -36,7 +55,9 @@ const createWindow = () => {
 };
 
 type IpcHandler = (...args: any[]) => unknown;
-const handlers: Record<string, IpcHandler> = {};
+const handlers: Record<string, IpcHandler> = {
+  "auth:registerUser": auth.registerUser,
+};
 
 for (const [channel, handler] of Object.entries(handlers)) {
   ipcMain.handle(channel, (_event, ...args) => handler(...args));
@@ -44,7 +65,8 @@ for (const [channel, handler] of Object.entries(handlers)) {
 
 app
   .whenReady()
-  .then(() => {
+  .then(async () => {
+    await ensureDatabaseSchema();
     createWindow();
 
     app.on("activate", () => {

@@ -11,6 +11,7 @@
   ],
   "scripts": {
     "start": "npm run dev",
+    "postinstall": "npm run rebuild:electron-native",
     "dev": "npm run db:generate && concurrently -k \"npm:dev:server\" \"npm:dev:desktop\"",
     "dev:desktop": "npm --prefix desktop run dev",
     "dev:server": "npm --prefix server run dev",
@@ -18,7 +19,7 @@
     "db:push": "npm --prefix db run prisma:push",
     "db:migrate": "npm --prefix db run prisma:migrate",
     "db:studio": "npm --prefix db run prisma:studio",
-    "rebuild:electron-native": "electron-rebuild -f -w better-sqlite3 -v 27.3.11",
+    "rebuild:electron-native": "electron-rebuild -f -w better-sqlite3 -v 28.3.3",
     "electron:dev": "npm --prefix desktop run dev",
     "build": "npm --prefix shared run build && npm --prefix server run build && npm --prefix desktop run build",
     "preview": "npm --prefix desktop run preview"
@@ -32,7 +33,7 @@
   },
   "dependencies": {
     "@types/better-sqlite3": "^7.6.13",
-    "better-sqlite3": "^12.6.2",
+    "better-sqlite3": "^12.8.0",
     "express": "^5.2.1",
     "react-icons": "^5.6.0",
     "react-router-dom": "^7.13.1"

@@ -3,17 +3,20 @@
   "private": true,
   "version": "0.0.1",
   "type": "module",
-  "main": "dist-electron/main.cjs",
+  "main": "dist-electron/main.js",
   "scripts": {
     "dev": "concurrently -k \"npm:dev:ui\" \"npm:dev:electron:build\" \"npm:dev:electron\"",
     "dev:ui": "vite --port 5173",
     "dev:electron:build": "tsc -p tsconfig.electron.json --watch --preserveWatchOutput",
-    "dev:electron": "wait-on file:./dist-electron/main.cjs http://localhost:5173 && cross-env NODE_ENV=development electron ./dist-electron/main.cjs",
+    "dev:electron": "wait-on file:./dist-electron/main.js http://localhost:5173 && cross-env NODE_ENV=development electron .",
     "build:electron": "tsc -p tsconfig.electron.json",
     "build": "npm run build:electron && vite build && electron-builder",
     "preview": "vite preview --port 4173"
   },
   "dependencies": {
+    "@prisma/adapter-better-sqlite3": "^7.5.0",
+    "@prisma/client": "^7.5.0",
+    "better-sqlite3": "^12.8.0",
     "react": "^18.2.0",
     "react-dom": "^18.2.0"
   },
@@ -24,7 +27,7 @@
     "@vitejs/plugin-react": "^4.1.1",
     "concurrently": "^9.2.1",
     "cross-env": "^7.0.3",
-    "electron": "^27.3.11",
+    "electron": "^28.3.3",
     "electron-builder": "^24.6.4",
     "typescript": "^5.2.2",
     "vite": "^5.0.0",
