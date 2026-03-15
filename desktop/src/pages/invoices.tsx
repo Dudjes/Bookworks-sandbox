@@ -1,14 +1,18 @@
 
-import { useNavigate } from "react-router-dom";
+import { Navigate, useNavigate } from "react-router-dom";
 import { useUser } from "../context/UserContext.tsx";
 
 export default function Invoices(){
     const navigate = useNavigate();
     const { user, logout } = useUser();
 
+    if (!user) {
+        return <Navigate to="/" replace />;
+    }
+
     const handleLogout = () => {
         logout();
-        navigate("/");
+        navigate("/", { replace: true });
     };
 
     return(

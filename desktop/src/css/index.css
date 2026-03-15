@@ -63,7 +63,8 @@ body {
 .sidebar__nav {
   display: flex;
   flex-direction: column;
-  gap: 6px;
+  flex: 1;
+  gap: clamp(6px, 0.8vh, 20px);
 }
 
 .sidebar__link {
@@ -105,4 +106,27 @@ body {
   margin-left: var(--sidebar-width);
   min-height: 100vh;
   padding: 24px;
+}
+
+.hl{
+  width: 100%;
+  border-top: 1px solid lightgray;
+}
+
+.logout{
+  display: flex;
+  flex-direction: row;
+  width: 100%;
+  border: 1.5px solid black;
+  border-radius: 6px;
+  padding: 10px;
+  background-color: var(--color-neutral-background);
+  font-weight: 500;
+  gap: 8px;
+  padding-left: 5%;
+}
+
+.logout:hover{
+  background-color: var(--color-primary-extra-light);
+  
 }

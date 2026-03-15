@@ -1,5 +1,5 @@
 
-import { NavLink } from "react-router-dom";
+import { NavLink, useNavigate } from "react-router-dom";
 import {
     FiGrid,
     FiFileText,
@@ -12,6 +12,8 @@ import {
     FiBookOpen,
     FiSettings,
 } from "react-icons/fi";
+import { IoIosLogOut } from "react-icons/io";
+import { useUser } from "../context/UserContext.tsx";
 
 type SideBarPage = {
     label: string;
@@ -20,6 +22,9 @@ type SideBarPage = {
 };
 
 export default function SideBar() {
+    const navigate = useNavigate();
+    const { logout } = useUser();
+
     const pages: SideBarPage[] = [
         { label: "Dashboard", link: "/", icon: <FiGrid size={18} /> },
         { label: "Verkoopfacturen", link: "/invoices", icon: <FiFileText size={18} /> },
@@ -33,12 +38,19 @@ export default function SideBar() {
         { label: "Instellingen", link: "/", icon: <FiSettings size={18} /> },
     ];
 
+    const handleLogout = () => {
+        logout();
+        navigate("/", { replace: true });
+    };
+
     return (
         <aside className="sidebar" aria-label="Hoofd navigatie">
             <div className="sidebar__brand">
                 <h1>BookWorks</h1>
                 <p>Boekhoudapplicatie</p>
             </div>
+
+            <div className="hl"></div>
 
             <nav className="sidebar__nav">
                 {pages.map((page) => (
@@ -57,6 +69,13 @@ export default function SideBar() {
                     </NavLink>
                 ))}
             </nav>
+
+            <div className="hl"></div>
+
+            <button type="button" className="logout" onClick={handleLogout}>
+                <IoIosLogOut size={18}/>
+                <p>Uitloggen</p>
+            </button>
         </aside>
     );
 }
