@@ -68,6 +68,31 @@ export async function ensureDatabaseSchema() {
     CREATE UNIQUE INDEX IF NOT EXISTS "UserCompany_userId_companyId_key"
     ON "UserCompany" ("userId", "companyId");
   `);
+
+  await prisma.$executeRawUnsafe(`
+    CREATE TABLE IF NOT EXISTS "Relation" (
+      "id"            INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,
+      "companyId"     INTEGER NOT NULL,
+      "companyName"   TEXT NOT NULL,
+      "contactPerson" TEXT,
+      "type"          TEXT NOT NULL,
+      "kvkNumber"     TEXT,
+      "btwNumber"     TEXT,
+      "IBAN"          TEXT,
+      "paymentTerm"   INTEGER NOT NULL,
+      "email"         TEXT NOT NULL,
+      "phonenumber"   TEXT,
+      "address"       TEXT,
+      "postcode"      TEXT,
+      "city"          TEXT,
+      "country"       TEXT,
+      "createdAt"     DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+      "updatedAt"     DATETIME NOT NULL,
+      CONSTRAINT "Relation_companyId_fkey"
+        FOREIGN KEY ("companyId") REFERENCES "Company"("id")
+        ON DELETE RESTRICT ON UPDATE CASCADE
+    );
+  `);
 }
 
 export { prisma };

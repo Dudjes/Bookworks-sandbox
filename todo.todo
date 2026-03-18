@@ -1,0 +1,3 @@
+d: debiteuren
+    je kan alleen debiteuren verwijderen wanneer ze geen facturen open hebben staan
+crud: verkoopfacturen

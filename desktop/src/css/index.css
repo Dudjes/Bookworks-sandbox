@@ -203,3 +203,74 @@ body {
   }
 }
 
+
+/* --------------------------------- */
+/* Alert */
+/* --------------------------------- */
+
+.alert {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 12px 16px;
+    border-radius: 6px;
+    border: 1px solid transparent;
+    margin-bottom: 12px;
+}
+
+.alert--success {
+    background-color: #d1fae5;
+    color: #065f46;
+    border-color: #6ee7b7;
+}
+
+.alert--error {
+    background-color: #fee2e2;
+    color: #991b1b;
+    border-color: #fca5a5;
+}
+
+.alert--warning {
+    background-color: #fef9c3;
+    color: #854d0e;
+    border-color: #fde047;
+}
+
+.alert--info {
+    background-color: #dbeafe;
+    color: #1e40af;
+    border-color: #93c5fd;
+}
+
+.alert__actions {
+    display: flex;
+    gap: 8px;
+    margin-left: 16px;
+}
+
+.alert__btn {
+    padding: 4px 12px;
+    border-radius: 4px;
+    border: 1px solid currentColor;
+    background: transparent;
+    color: inherit;
+    font-weight: 600;
+    cursor: pointer;
+}
+
+.alert__btn:hover {
+    opacity: 0.8;
+}
+
+.alert__close {
+    background: none;
+    border: none;
+    font-weight: bold;
+    cursor: pointer;
+    color: inherit;
+    font-size: 16px;
+}
+
+.alert__close:hover {
+    opacity: 0.8;
+}

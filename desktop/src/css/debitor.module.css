@@ -61,6 +61,178 @@
     border-radius: 12px;
     border-width: 2px solid blacK;
     background-color: var(--color-primary-main);
-    color: white;
+}
+
+.submitButton h3{
     font-size: 1.1rem;
+    color: white;
+}
+
+/* debitors */
+.debitorsContainer * {
+    color: black;
+}
+
+.debitorsContainer{
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 20px;
+    margin: 2vh 0;
+}
+
+.debitorContainer{
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    min-height: 50vh;
+    background-color: #fff;
+    border-radius: 10px;
+    padding: 2vh;
+    gap: 10px;
+    border: 1px solid #d9dde4;
+}
+
+.debitorHeader{
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: flex-start;
+}
+
+.debitorTitleGroup {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+.debitorTitle {
+    margin: 0;
+    font-size: 1.25rem;
+    font-weight: 700;
+}
+
+.debitorContact {
+    margin: 0;
+    color: #6b7280;
+}
+
+.iconActions {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.iconButton,
+.iconButtonDelete {
+    border: none;
+    background: transparent;
+    padding: 0;
+    cursor: pointer;
+    display: grid;
+    place-items: center;
+}
+
+.iconButton {
+    color: #374151;
+}
+
+.iconButtonDelete {
+    color: #ef4444;
+}
+
+.debitorTopInfo {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.debitorInfo{
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    gap: 8px;
+    font-size: 0.95rem;
+}
+
+.debitorInfo p {
+    margin: 0;
+}
+
+.divider {
+    border-top: 1px solid #d9dde4;
+    margin: 4px 0;
+}
+
+.metaGrid {
+    display: grid;
+    grid-template-columns: 1fr auto;
+    row-gap: 8px;
+    column-gap: 16px;
+}
+
+.metaLabel,
+.metaValue {
+    margin: 0;
+    font-size: 0.95rem;
+}
+
+.metaLabel {
+    color: #6b7280;
+}
+
+.metaValue {
+    text-align: right;
+    font-weight: 500;
+}
+
+.bottomStats {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 16px;
+}
+
+.statItem {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+
+.statLabel,
+.statAmount,
+.statValue {
+    margin: 0;
+}
+
+.statLabel {
+    color: #6b7280;
+    font-size: 0.95rem;
+}
+
+.statAmount {
+    color: #16a34a;
+    font-size: 1.5rem;
+    line-height: 1.2;
+}
+
+.statValue {
+    color: #111827;
+    font-size: 1.5rem;
+    line-height: 1.2;
+}
+
+@media (max-width: 900px) {
+    .debitorsContainer {
+        grid-template-columns: 1fr;
+    }
+
+    .debitorContainer {
+        min-height: auto;
+    }
+}
+
+@media (max-width: 560px) {
+    .bottomStats {
+        grid-template-columns: 1fr;
+        gap: 8px;
+    }
 }

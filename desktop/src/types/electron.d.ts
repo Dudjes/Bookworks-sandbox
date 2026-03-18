@@ -2,7 +2,11 @@ type IpcChannel =
   | "auth:registerUser"
   | "auth:loginUser"
   | "company:createOrUpdate"
-  | "company:getCompanyByUser";
+  | "company:getCompanyByUser"
+  | "debitor:createDebitor"
+  | "debitor:getDebitors"
+  | "debitor:deleteDebitor"
+  | "debitor:updateDebitor";
 
 interface Window {
   api?: {

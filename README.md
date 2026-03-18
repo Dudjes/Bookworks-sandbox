@@ -26,3 +26,10 @@ npm run dev
 
 Desktop dev uses `http://localhost:5173` and compiles Electron main/preload into `desktop/dist-electron` automatically.
 If startup fails, free port `5173` and rerun `npm run dev:desktop`.
+
+## Creating methods
+
+When creating a method with ipc there are a few steps:
+    step 1: create the method in the database folder
+    step 2: add the method to the ipcHandler in main
+    step 3: add the method to electron types file

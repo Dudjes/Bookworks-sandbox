@@ -5,6 +5,7 @@ import { existsSync } from "fs";
 import { ensureDatabaseSchema } from "./database.js";
 import * as auth from "./database/auth.js";
 import * as company from "./database/company.js";
+import * as debitor from "./database/debitor.js";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -73,8 +74,50 @@ const handlers: Record<string, IpcHandler> = {
       country: string;
     };
   }) => company.createOrUpdate(payload.userId, payload.company),
-
   "company:getCompanyByUser": (userId: number) => company.getCompanyByUser(userId),
+
+  "debitor:createDebitor": async (payload: {
+    userId: number;
+    debitor: {
+      companyName: string;
+      contactPerson: string;
+      kvkNumber: string;
+      btwNumber: string;
+      IBAN: string;
+      paymentTerm: number;
+      email: string;
+      phonenumber: string;
+      address: string;
+      postcode: string;
+      city: string;
+      country: string;
+    };
+  }) => {
+    const userCompany = await company.getCompanyByUser(payload.userId);
+    if (!userCompany) {
+      throw new Error("User has no company. Please set up company details first.");
+    }
+    return debitor.createDebitor(payload.userId, userCompany.id, payload.debitor);
+  },
+  "debitor:getDebitors": debitor.getDebitors,
+  "debitor:deleteDebitor": debitor.deleteDebitor,
+  "debitor:updateDebitor": (payload: {
+    debitorId: number;
+    debitor: {
+      companyName: string;
+      contactPerson: string;
+      kvkNumber: string;
+      btwNumber: string;
+      IBAN: string;
+      paymentTerm: number;
+      email: string;
+      phonenumber: string;
+      address: string;
+      postcode: string;
+      city: string;
+      country: string;
+    };
+  }) => debitor.updateDebitor(payload.debitor, payload.debitorId),
 };
 
 for (const [channel, handler] of Object.entries(handlers)) {
