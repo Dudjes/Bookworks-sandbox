@@ -1,0 +1,21 @@
+.modalOverlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.45);
+  display: grid;
+  place-items: center;
+  z-index: 1000;
+}
+
+.modalContent {
+  background: #fff;
+  border-radius: 12px;
+  padding: 20px;
+  outline: none;
+  box-shadow: 0 12px 30px rgba(0, 0, 0, 0.25);
+  overflow-y: auto;
+}
+
+.modalContent * {
+  color: black;
+}

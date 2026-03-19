@@ -2,7 +2,7 @@ import { Navigate } from "react-router-dom";
 import { useUser } from "../context/UserContext.tsx";
 import BaseHeader from "@/components/baseHeader.tsx";
 import MainInput from "@/components/mainInput.tsx";
-import Modal from "react-modal";
+import Modal from "@/components/Modal.tsx";
 import { useEffect, useState } from "react";
 import styles from "@/css/debitor.module.css";
 import { IoIosCloseCircleOutline } from "react-icons/io";
@@ -12,8 +12,6 @@ import { FaPhoneAlt, FaRegEdit } from "react-icons/fa";
 import { MdDeleteForever, MdLocationOn } from "react-icons/md";
 import { CiMail } from "react-icons/ci";
 import Alert from "@/components/alert.tsx";
-
-Modal.setAppElement("#root");
 
 type DebitorForm = {
   id: number,
@@ -282,9 +280,9 @@ export default function Debitors() {
         </div>
       <Modal
         isOpen={modalVisible}
-        onRequestClose={closeModal}
-        className={styles.modalContent}
-        overlayClassName={styles.modalOverlay}
+        onClose={closeModal}
+        width="65vw"
+        height="auto"
       >
         <div className={styles.modalContainer}>
           <div className={styles.modalHeader}>
