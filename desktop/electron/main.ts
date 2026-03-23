@@ -7,7 +7,6 @@ import * as auth from "./database/auth.js";
 import * as company from "./database/company.js";
 import * as debitor from "./database/debitor.js";
 import * as invoice from "./database/invoice.js"
-import * as pdf from "./database/pdfService.js"
 import { VAT, InvoiceStatus } from "@prisma/client";
 
 const __filename = fileURLToPath(import.meta.url);
@@ -75,6 +74,7 @@ const handlers: Record<string, IpcHandler> = {
       postcode: string;
       city: string;
       country: string;
+      logo?: string;
     };
   }) => company.createOrUpdate(payload.userId, payload.company),
   "company:getCompanyByUser": (userId: number) => company.getCompanyByUser(userId),
@@ -129,7 +129,7 @@ const handlers: Record<string, IpcHandler> = {
         companyId: number,
         relationId: number,
         createdById: number,
-        description: string,
+        title: string,
         invoiceDate: string,
         dueDate: string,
         paymentTerm: number,
@@ -153,7 +153,7 @@ const handlers: Record<string, IpcHandler> = {
     invoiceId: number,
     invoice: {
         relationId: number,
-        description: string,
+        title: string,
         invoiceDate: string,
         dueDate: string,
         paymentTerm: number,
@@ -175,8 +175,6 @@ const handlers: Record<string, IpcHandler> = {
   "invoice:getInvoices": invoice.getInvoices,
   "invoice:deleteInvoice": invoice.deleteInvoice,
   "invoice:getInvoice": invoice.getInvoice,
-  "invoice:generatePdf": (invoiceId: number) =>
-    pdf.generateInvoicePDF(invoiceId),
 };
 
 for (const [channel, handler] of Object.entries(handlers)) {

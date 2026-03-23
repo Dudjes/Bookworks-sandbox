@@ -4,7 +4,7 @@ export const InvoiceStatus = z.enum(["DRAFT", "OPEN", "PAYED", "DUE"]);
 export const VAT = z.enum(["0%", "9%", "21%"]);
 
 export const invoiceSchema = z.object({
-    description: z.string().optional(),
+    title: z.string().optional(),
     invoiceDate: z.string().date(),
     dueDate: z.string().date(),
     subTotal: z.number().min(0, "Subtotaal moet positief zijn"),

@@ -14,6 +14,23 @@ const prisma = new PrismaClient({
 console.log("Database location:", dbPath);
 
 export async function ensureDatabaseSchema() {
+  // Add missing columns to existing tables if they don't exist
+  try {
+    await prisma.$executeRawUnsafe(`
+      ALTER TABLE "Company" ADD COLUMN "logo" TEXT;
+    `);
+  } catch (e) {
+    // Column likely already exists, ignore error
+  }
+
+  try {
+    await prisma.$executeRawUnsafe(`
+      ALTER TABLE "Invoice" ADD COLUMN "title" TEXT;
+    `);
+  } catch (e) {
+    // Column likely already exists, ignore error
+  }
+
   await prisma.$executeRawUnsafe(`
     CREATE TABLE IF NOT EXISTS "User" (
       "id" INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,
@@ -44,6 +61,7 @@ export async function ensureDatabaseSchema() {
       "phone" TEXT,
       "email" TEXT,
       "website" TEXT,
+      "logo" TEXT,
       "createdAt" DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
       "updatedAt" DATETIME
     )
@@ -101,7 +119,7 @@ export async function ensureDatabaseSchema() {
       "companyId"     INTEGER NOT NULL,
       "relationId"    INTEGER NOT NULL,
       "createdById"   INTEGER NOT NULL,
-      "description"   TEXT NOT NULL,
+      "title"   TEXT NOT NULL,
       "invoiceDate"   DATETIME NOT NULL,
       "dueDate"       DATETIME NOT NULL,
       "paymentTerm"   INTEGER NOT NULL,

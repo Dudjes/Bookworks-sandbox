@@ -12,7 +12,9 @@ import { BsDownload } from "react-icons/bs";
 import { RiDeleteBin6Line } from "react-icons/ri";
 import { validate } from "@/utils/validate.ts";
 import { invoiceLineSchema, invoiceSchema } from "@/schemas/invoice.schema.ts";
-import { Invoice, InvoiceStatus } from "@prisma/client";
+import { Invoice as PrismaInvoice, InvoiceStatus, InvoiceLine as PrismaInvoiceLine } from "@prisma/client";
+import { PDFViewer, PDFDownloadLink } from "@react-pdf/renderer";
+import { InvoicePDF } from "./invoicePDF.tsx";
 
 type Debitor = {
   id: number,
@@ -30,12 +32,36 @@ type InvoiceLine = {
   lineTotalIncl: number;
 }
 
+type Invoice = Omit<PrismaInvoice, 'subTotal' | 'vatTotal' | 'total' | 'invoiceDate' | 'dueDate'> & {
+  invoiceLines?: PrismaInvoiceLine[];
+  company?: {
+    name: string;
+    logo?: string;
+    address?: string;
+    postcode?: string;
+    city?: string;
+    country?: string;
+    btwNumber?: string;
+    kvkNumber?: string;
+    iban?: string;
+    phone?: string;
+    email?: string;
+  };
+  subTotal: number;
+  vatTotal: number;
+  total: number;
+  invoiceDate: string | Date;
+  dueDate: string | Date;
+  title: string;
+};
+
 type InvoiceForm = {
   relationId: string;
   invoiceDate: string;
   paymentTerm: string;
   dueDate: string;
   status: InvoiceStatus;
+  title: string;
 }
 
 const defaultForm: InvoiceForm = {
@@ -44,6 +70,7 @@ const defaultForm: InvoiceForm = {
   paymentTerm: "",
   dueDate: "",
   status: InvoiceStatus.DRAFT,
+  title: "",
 };
 
 const defaultInvoiceLines: InvoiceLine[] = [
@@ -67,6 +94,8 @@ export default function Invoices(){
     const [invoices, setInvoices] = useState<Invoice[]>([]);
     const [modalType, setModalType] = useState("");
     const [selectedInvoice, setSelectedInvoice] = useState<Invoice>();
+    const [previewVisible, setPreviewVisible] = useState(false);
+    const [logoUrl, setLogoUrl] = useState<string>("");
 
     const [form, setForm] = useState(defaultForm);
     const [invoiceLines, setInvoiceLines] = useState<InvoiceLine[]>(defaultInvoiceLines);
@@ -168,7 +197,7 @@ export default function Invoices(){
             companyId: user?.id || 0,
             relationId: Number(form.relationId),
             createdById: user?.id || 0,
-            description: "",
+            title: "",
             invoiceDate: form.invoiceDate,
             dueDate: form.dueDate,
             paymentTerm: Number(form.paymentTerm),
@@ -224,7 +253,7 @@ export default function Invoices(){
 
         const formInvoice = {
             relationId: Number(form.relationId),
-            description: "",
+            title: "",
             invoiceDate: form.invoiceDate,
             dueDate: form.dueDate,
             paymentTerm: Number(form.paymentTerm),
@@ -333,6 +362,22 @@ export default function Invoices(){
         return { subTotal, vatTotal, total };
     }
 
+    const openPreview = async (invoice: Invoice) => {
+        try {
+            // Fetch the full invoice with invoiceLines
+            const fullInvoice = await window.api?.invoke("invoice:getInvoice", invoice.id) as Invoice;
+            setSelectedInvoice(fullInvoice);
+            setLogoUrl(fullInvoice.company?.logo || "");
+            setPreviewVisible(true);
+        } catch (error) {
+            console.error("Failed to fetch invoice for preview:", error);
+            // Fallback to the passed invoice
+            setSelectedInvoice(invoice);
+            setLogoUrl(invoice.company?.logo || "");
+            setPreviewVisible(true);
+        }
+    };
+
 
     // --------------------
     // UseEffects
@@ -353,6 +398,7 @@ export default function Invoices(){
                 paymentTerm: selectedInvoice.paymentTerm.toString(),
                 relationId: selectedInvoice.relationId.toString(),
                 status: selectedInvoice.status,
+                title: selectedInvoice.title,
             });
             // Map invoice lines from database format to form format
             const mappedLines = (selectedInvoice as any).invoiceLines?.map((line: any) => ({
@@ -420,8 +466,7 @@ export default function Invoices(){
                                 <td><strong>€ {Number(invoice.total).toFixed(2)}</strong></td>
                                 <td className={styles.InvoiceStatus_open}>{invoice.status}</td>
                                 <td className={styles.actions}>
-                                    <FaRegEye className={styles.action}/>
-                                    <BsDownload  className={styles.action}/>
+                                    <FaRegEye className={styles.action} onClick={() => openPreview(invoice)}/>
                                     <FaRegEdit className={styles.action} onClick={() => openUpdateModal(invoice)}/>
                                     {invoice.status === "DRAFT" && <RiDeleteBin6Line className={styles.action} onClick={() => deleteInvoice(invoice)}/>}
                                 </td>
@@ -430,6 +475,8 @@ export default function Invoices(){
                     </tbody>
                 </table>
             </div>
+
+            {/* Form modal */}
             <Modal 
                 isOpen={modalVisible}
                 onClose={closeModal}
@@ -488,6 +535,15 @@ export default function Invoices(){
                                     error={errors.dueDate}
                                     onChangeText={(v) => setField("dueDate", v)}
                                     readonly={true}
+                                />
+                            </div>
+                            <div>
+                                <MainInput
+                                    label="Titel"
+                                    type="text"
+                                    value={form.title}
+                                    error={errors.title}
+                                    onChangeText={(v) => setField("title", v)}
                                 />
                             </div>
                             {modalType === "update" && (
@@ -632,6 +688,95 @@ export default function Invoices(){
                             </div>
                         </div>
                     </form>
+                </div>
+            </Modal>
+
+            {/* PDF modal */}
+            <Modal
+                isOpen={previewVisible}
+                onClose={() => setPreviewVisible(false)}
+                width="80vw"
+                height="90vh"
+                >
+                <div style={{ display: "flex", flexDirection: "column", height: "100%" }}>
+                    <div className={styles.modalHeader} style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+                        <div>
+                            <h3>Factuur {selectedInvoice?.invoiceNumber}</h3>
+                            <div style={{ marginTop: "10px", display: "flex", gap: "10px", alignItems: "center" }}>
+                                <label htmlFor="logo-select" style={{ fontSize: "12px", color: "#666" }}>Logo:</label>
+                                <input 
+                                    id="logo-select"
+                                    type="file" 
+                                    accept="image/*"
+                                    style={{ fontSize: "12px" }}
+                                    onChange={(e) => {
+                                        //  user picks a file → 
+                                        // file is read and converted to Base64 → 
+                                        // Base64 is saved to state → 
+                                        // PDF preview updates with the new logo
+                                        const file = e.target.files?.[0];
+                                        if (file) {
+                                            const reader = new FileReader();
+                                            reader.onload = (event) => {
+                                                const logoData = event.target?.result as string;
+                                                setLogoUrl(logoData);
+                                                if (selectedInvoice) {
+                                                    setSelectedInvoice({
+                                                        ...selectedInvoice,
+                                                        company: {
+                                                            ...selectedInvoice.company,
+                                                            logo: logoData
+                                                        } as any
+                                                    });
+                                                }
+                                            };
+                                            reader.readAsDataURL(file);
+                                        }
+                                    }}
+                                />
+                            </div>
+                        </div>
+                        
+                        {/* download PDF */}
+                        <div style={{ display: "flex", gap: "10px", alignItems: "center" }}>
+                            {selectedInvoice && (
+                                <PDFDownloadLink 
+                                    document={<InvoicePDF invoice={selectedInvoice} />}
+                                    fileName={`Factuur_${selectedInvoice.invoiceNumber}.pdf`}
+                                >
+                                    {({ blob, url, loading, error }) => (
+                                        <button 
+                                            style={{
+                                                padding: "8px 16px",
+                                                backgroundColor: "#4CAF50",
+                                                color: "white",
+                                                border: "none",
+                                                borderRadius: "4px",
+                                                cursor: loading ? "wait" : "pointer",
+                                                display: "flex",
+                                                alignItems: "center",
+                                                gap: "6px"
+                                            }}
+                                            disabled={loading}
+                                        >
+                                            <BsDownload size={16} />
+                                            {loading ? "Downloaden..." : "Download PDF"}
+                                        </button>
+                                    )}
+                                </PDFDownloadLink>
+                            )}
+                            <IoIosCloseCircleOutline
+                                size={30}
+                                style={{ cursor: "pointer" }}
+                                onClick={() => setPreviewVisible(false)}
+                            />
+                        </div>
+                    </div>
+                    {selectedInvoice && (
+                    <PDFViewer width="100%" height="100%" showToolbar={false}>
+                        <InvoicePDF invoice={selectedInvoice} />
+                    </PDFViewer>
+                    )}
                 </div>
             </Modal>
         </div>

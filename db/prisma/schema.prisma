@@ -32,6 +32,7 @@ model Company {
   phone     String?
   email     String?
   website   String?
+  logo     String?
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -62,7 +63,7 @@ model Invoice {
   relationId  Int
   createdById Int
 
-  description String
+  title String
 
   invoiceDate DateTime
   dueDate     DateTime

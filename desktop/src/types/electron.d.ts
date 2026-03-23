@@ -12,8 +12,7 @@ type IpcChannel =
   | "invoice:getInvoices"
   | "invoice:updateInvoice"
   | "invoice:deleteInvoice"
-  | "invoice:getInvoice"
-  | "invoice:generatePdf";
+  | "invoice:getInvoice";
 
 interface Window {
   api?: {

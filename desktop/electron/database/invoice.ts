@@ -44,7 +44,7 @@ export async function createInvoice(
         companyId: number,
         relationId: number,
         createdById: number,
-        description: string,
+        title: string,
         invoiceDate: string,
         dueDate: string,
         paymentTerm: number,
@@ -85,7 +85,7 @@ export async function createInvoice(
                 companyId:     invoice.companyId,
                 relationId:    invoice.relationId,
                 createdById:   invoice.createdById,
-                description:   invoice.description,
+                title:         invoice.title,
                 invoiceDate:   new Date(invoice.invoiceDate),
                 dueDate:       new Date(invoice.dueDate),
                 paymentTerm:   invoice.paymentTerm,
@@ -147,7 +147,7 @@ export async function updateInvoice(
   invoiceId: number,
   invoice: {
     relationId: number;
-    description: string;
+    title: string;
     invoiceDate: string;
     dueDate: string;
     paymentTerm: number;
@@ -169,7 +169,7 @@ export async function updateInvoice(
   try {
     const updateData = {
       relationId: invoice.relationId,
-      description: invoice.description,
+      title: invoice.title,
       invoiceDate: new Date(invoice.invoiceDate),
       dueDate: new Date(invoice.dueDate),
       paymentTerm: invoice.paymentTerm,
@@ -224,8 +224,20 @@ export async function getInvoice(invoiceId: number) {
     include: {
       invoiceLines: true,
       relation: true,
+      company: true,
     },
   });
 
-  return invoice;
+  if (!invoice) {
+    throw new Error("Invoice not found");
+  }
+
+  // Electron IPC requires structured-cloneable return values.
+  // Prisma Decimal instances are not cloneable, so convert to numbers and return plain JSON data.
+  return JSON.parse(JSON.stringify({
+    ...invoice,
+    subTotal: Number(invoice.subTotal),
+    vatTotal: Number(invoice.vatTotal),
+    total: Number(invoice.total),
+  }));
 }

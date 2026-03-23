@@ -19,6 +19,7 @@ type SettingsForm = {
   phone: string;
   email: string;
   website: string;
+  logo: string;
 };
 
 export default function Settings() {
@@ -34,13 +35,28 @@ export default function Settings() {
         phone: "",
         email: "",
         website: "",
+        logo: "",
     });
 
     const [errors, setErrors] = useState<Partial<Record<keyof SettingsForm, string>>>({});
+    const [logoPreview, setLogoPreview] = useState<string>("");
 
     const handleFieldChange = (key: keyof SettingsForm, value: string) => {
         setForm((prev) => ({ ...prev, [key]: value }));
         setErrors((prev) => ({ ...prev, [key]: undefined }));
+    };
+
+    const handleLogoChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+        const file = event.target.files?.[0];
+        if (file) {
+            const reader = new FileReader();
+            reader.onload = (e) => {
+                const base64String = e.target?.result as string;
+                setForm((prev) => ({ ...prev, logo: base64String }));
+                setLogoPreview(base64String);
+            };
+            reader.readAsDataURL(file);
+        }
     };
 
     const { user } = useUser();
@@ -88,6 +104,7 @@ export default function Settings() {
                     phone:     company.phone     ?? "",
                     email:     company.email     ?? "",
                     website:   company.website   ?? "",
+                    logo:      company.logo      ?? "",
                 });
             }
         } catch (error) {
@@ -100,6 +117,13 @@ export default function Settings() {
             getCompanyInfo();
         }
     }, [user?.id]);
+
+    // Sync logoPreview when form.logo changes (when company data is loaded)
+    useEffect(() => {
+        if (form.logo && form.logo.startsWith('data:image')) {
+            setLogoPreview(form.logo);
+        }
+    }, [form.logo]);
 
   return (
     <div className={styles.mainContainer}>
@@ -208,6 +232,29 @@ export default function Settings() {
                 error={errors.website}
                 onChangeText={(v) => handleFieldChange("website", v)}
               />
+            </div>
+
+            <div className={styles.logoSection}>
+              <label htmlFor="logo-upload" style={{ display: "block", marginBottom: "10px", fontWeight: 500 }}>
+                Logo
+              </label>
+              <input
+                id="logo-upload"
+                type="file"
+                accept="image/*"
+                onChange={handleLogoChange}
+                style={{ marginBottom: "10px" }}
+              />
+              {logoPreview && (
+                <div style={{ marginTop: "15px" }}>
+                  <p style={{ fontSize: "14px", marginBottom: "8px" }}>Preview:</p>
+                  <img 
+                    src={logoPreview} 
+                    alt="Logo preview" 
+                    style={{ maxWidth: "200px", maxHeight: "200px", borderRadius: "4px" }}
+                  />
+                </div>
+              )}
             </div>
 
             <button type="button" onClick={handleCreateOrUpdate}>

@@ -26,4 +26,5 @@ export const companySchema = z.object({
     }),
 
   website: z.string().optional(),
+  logo: z.string().optional(),
 });

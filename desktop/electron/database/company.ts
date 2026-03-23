@@ -10,6 +10,7 @@ export async function createOrUpdate(
         postcode: string;
         city: string;
         country: string;
+        logo?: string;
     }
 ){
     //check if user is in a company
