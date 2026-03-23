@@ -7,6 +7,7 @@ type MainInputProps = {
   type?: React.HTMLInputTypeAttribute;
   fullWidth?: boolean;
   error?: string;
+  readonly?: boolean;
 };
 
 export default function MainInput({
@@ -18,6 +19,7 @@ export default function MainInput({
   type = "text",
   fullWidth = false,
   error,
+  readonly = false,
 }: MainInputProps) {
     // "Company Name" → "company-name"
     const inputId = label.toLowerCase().replace(/\s+/g, "-"); 
@@ -35,6 +37,7 @@ export default function MainInput({
                 placeholder={placeholder}
                 value={value}
                 onChange={(e) => onChangeText(e.target.value)}
+                readOnly={readonly}
             />
 
             {error && <span className="main-input__error">{error}</span>}

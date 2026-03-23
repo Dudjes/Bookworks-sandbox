@@ -93,6 +93,50 @@ export async function ensureDatabaseSchema() {
         ON DELETE RESTRICT ON UPDATE CASCADE
     );
   `);
+
+  await prisma.$executeRawUnsafe(`
+    CREATE TABLE IF NOT EXISTS "Invoice" (
+      "id"            INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,
+      "invoiceNumber" TEXT NOT NULL UNIQUE,
+      "companyId"     INTEGER NOT NULL,
+      "relationId"    INTEGER NOT NULL,
+      "createdById"   INTEGER NOT NULL,
+      "description"   TEXT NOT NULL,
+      "invoiceDate"   DATETIME NOT NULL,
+      "dueDate"       DATETIME NOT NULL,
+      "paymentTerm"   INTEGER NOT NULL,
+      "subTotal"      DECIMAL NOT NULL,
+      "vatTotal"      DECIMAL NOT NULL,
+      "total"         DECIMAL NOT NULL,
+      "status"        TEXT NOT NULL DEFAULT 'draft',
+      CONSTRAINT "Invoice_companyId_fkey"
+        FOREIGN KEY ("companyId") REFERENCES "Company"("id")
+        ON DELETE RESTRICT ON UPDATE CASCADE,
+      CONSTRAINT "Invoice_relationId_fkey"
+        FOREIGN KEY ("relationId") REFERENCES "Relation"("id")
+        ON DELETE RESTRICT ON UPDATE CASCADE,
+      CONSTRAINT "Invoice_createdById_fkey"
+        FOREIGN KEY ("createdById") REFERENCES "User"("id")
+        ON DELETE RESTRICT ON UPDATE CASCADE
+    );
+  `);
+
+  await prisma.$executeRawUnsafe(`
+    CREATE TABLE IF NOT EXISTS "InvoiceLine" (
+      "id"             INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,
+      "invoiceId"      INTEGER NOT NULL,
+      "rowDescription" TEXT NOT NULL,
+      "quantity"       REAL NOT NULL,
+      "price"          REAL NOT NULL,
+      "vat"            TEXT NOT NULL,
+      "lineTotalExcl"  REAL NOT NULL,
+      "vatAmount"      REAL NOT NULL,
+      "lineTotalIncl"  REAL NOT NULL,
+      CONSTRAINT "InvoiceLine_invoiceId_fkey"
+        FOREIGN KEY ("invoiceId") REFERENCES "Invoice"("id")
+        ON DELETE RESTRICT ON UPDATE CASCADE
+    );
+`);
 }
 
 export { prisma };

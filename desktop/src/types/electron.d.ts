@@ -6,7 +6,14 @@ type IpcChannel =
   | "debitor:createDebitor"
   | "debitor:getDebitors"
   | "debitor:deleteDebitor"
-  | "debitor:updateDebitor";
+  | "debitor:updateDebitor"
+  | "invoice:createInvoice"
+  | "invoice:generateNumber"
+  | "invoice:getInvoices"
+  | "invoice:updateInvoice"
+  | "invoice:deleteInvoice"
+  | "invoice:getInvoice"
+  | "invoice:generatePdf";
 
 interface Window {
   api?: {

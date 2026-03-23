@@ -66,12 +66,13 @@ model Invoice {
 
   invoiceDate DateTime
   dueDate     DateTime
+  paymentTerm Int
 
   subTotal Decimal
   vatTotal Decimal
   total    Decimal
 
-  status String
+  status InvoiceStatus @default(DRAFT)
 
   company   Company  @relation(fields: [companyId], references: [id])
   createdBy User     @relation("CreatedInvoices", fields: [createdById], references: [id])
@@ -84,9 +85,9 @@ model InvoiceLine {
   id        Int @id @default(autoincrement())
   invoiceId Int
 
-  description String
-  quantity    Float
-  price       Float
+  rowDescription String
+  quantity       Float
+  price          Float
 
   vat VAT
 
@@ -135,4 +136,12 @@ enum VAT {
 enum RelationType {
   DEBTOR   @map("debitor")
   CREDITOR @map("creditor")
+}
+
+enum InvoiceStatus {
+  //draft, open, payed, due
+  DRAFT @map("draft")
+  OPEN  @map("open")
+  PAYED @map("payed")
+  DUE   @map("due")
 }

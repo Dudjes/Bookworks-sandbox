@@ -6,6 +6,9 @@ import { ensureDatabaseSchema } from "./database.js";
 import * as auth from "./database/auth.js";
 import * as company from "./database/company.js";
 import * as debitor from "./database/debitor.js";
+import * as invoice from "./database/invoice.js"
+import * as pdf from "./database/pdfService.js"
+import { VAT, InvoiceStatus } from "@prisma/client";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -118,6 +121,62 @@ const handlers: Record<string, IpcHandler> = {
       country: string;
     };
   }) => debitor.updateDebitor(payload.debitor, payload.debitorId),
+  "invoice:generateNumber": (userId: number) => invoice.generateInvoiceNumber(userId),
+  "invoice:createInvoice": (payload: {
+    userId: number,
+    invoice: {
+        invoiceNumber: string,
+        companyId: number,
+        relationId: number,
+        createdById: number,
+        description: string,
+        invoiceDate: string,
+        dueDate: string,
+        paymentTerm: number,
+        subTotal: number,
+        vatTotal: number,
+        total: number,
+        status: InvoiceStatus,
+    },
+    invoiceLines: {
+        rowDescription: string,
+        quantity: number,
+        price: number,
+        vat: VAT,
+        lineTotalExcl: number,
+        vatAmount: number,
+        lineTotalIncl: number,
+    }[]
+  }) => invoice.createInvoice(payload.userId, payload.invoice, payload.invoiceLines),
+  "invoice:updateInvoice": (payload: {
+    userId: number,
+    invoiceId: number,
+    invoice: {
+        relationId: number,
+        description: string,
+        invoiceDate: string,
+        dueDate: string,
+        paymentTerm: number,
+        subTotal: number,
+        vatTotal: number,
+        total: number,
+        status: InvoiceStatus,
+    },
+    invoiceLines: {
+        rowDescription: string,
+        quantity: number,
+        price: number,
+        vat: VAT,
+        lineTotalExcl: number,
+        vatAmount: number,
+        lineTotalIncl: number,
+    }[]
+  }) => invoice.updateInvoice(payload.invoiceId, payload.invoice, payload.invoiceLines),
+  "invoice:getInvoices": invoice.getInvoices,
+  "invoice:deleteInvoice": invoice.deleteInvoice,
+  "invoice:getInvoice": invoice.getInvoice,
+  "invoice:generatePdf": (invoiceId: number) =>
+    pdf.generateInvoicePDF(invoiceId),
 };
 
 for (const [channel, handler] of Object.entries(handlers)) {

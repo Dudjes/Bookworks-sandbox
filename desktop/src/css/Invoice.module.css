@@ -17,22 +17,27 @@
 
 .mainTable table {
     width: 100%;
-    min-width: 980px;
+    min-width: 1200px;
     table-layout: fixed;
     border-collapse: collapse;
 }
 
 .mainTable thead{
-    background-color: lightgray;
+    background-color: var(--color-primary-extra-light);
     border-top-left-radius: 12px;
     border-top-right-radius: 12px;
 }
 
 .mainTable thead th{
-    width: 11%; /* 9 columns */
+    width: 11.11%; /* 9 columns */
     text-align: center;
     padding: 0.75rem 1.25rem;
-    border-top: 1px solid #bfbfbf;
+    vertical-align: middle;
+}
+
+.mainTable tbody td {
+    text-align: center;
+    vertical-align: middle;
 }
 
 .mainTable thead th:first-child{
@@ -44,9 +49,359 @@
 }
 
 .mainTable tr{
-    height: 3rem;
+    height: 1rem;
 }
 
 .mainTable td{
-    padding: 0 1.25rem;
+    padding: 0.75rem 1.25rem;
+}
+
+.tableInfoRow{
+    background-color: white;
+    border-bottom: 1px solid lightgray;
+
+}
+
+tbody{
+    border: 1px solid rgba(211, 211, 211, 0.609);
+}
+
+
+
+.actions{
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: center;
+    gap: 1.5vh;
+}
+
+.action {
+    cursor: pointer;
+    transition: color 0.2s ease;
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+/* ---------------------- */
+/* Modal Styles */
+/* ---------------------- */
+.modalHeader {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-bottom: 2px solid lightgray;
+    padding-bottom: 1rem;
+    margin-bottom: 1rem;
+}
+
+.modalHeader h3 {
+    margin: 0;
+    font-size: 1.25rem;
+    color: black;
+}
+
+.invoiceForm {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 1rem;
+}
+
+.formGroup {
+    grid-column: 1 / -1;
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 1rem;
+}
+
+.formGroup > div {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+
+.formLabel {
+    display: block;
+    font-size: 18px;
+    font-weight: 600;
+    color: #0f172a;
+    line-height: 1.2;
+}
+
+.formSelect {
+    width: 100%;
+    height: 44px;
+    padding: 0 14px;
+    border: 1px solid #d1d5db;
+    border-radius: 10px;
+    background-color: #fff;
+    font-size: 16px;
+    color: #0f172a;
+    cursor: pointer;
+    outline: none;
+    transition: border-color 0.15s ease, box-shadow 0.15s ease;
+}
+
+.formSelect:hover {
+    border-color: #9ca3af;
+}
+
+.formSelect:focus {
+    outline: none;
+    border-color: #3b82f6;
+    box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.15);
+}
+
+.formActions {
+    grid-column: 1 / -1;
+    display: flex;
+    gap: 2rem;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.buttonCancel {
+    padding: 0.75rem 1.5rem;
+    border-radius: 8px;
+    border: 1px solid #d9dde4;
+    background: #fff;
+    cursor: pointer;
+    font-weight: 500;
+    color: black;
+    transition: all 0.2s ease;
+}
+
+.buttonCancel:hover {
+    background: #f9f9f9;
+    border-color: #9ca3af;
+}
+
+.actionButtons {
+    display: flex;
+    gap: 1rem;
+}
+
+.buttonSubmit {
+    padding: 0.75rem 1.5rem;
+    border-radius: 8px;
+    border: none;
+    background: var(--color-primary-main);
+    color: white;
+    cursor: pointer;
+    font-weight: 500;
+}
+
+.buttonSubmit:hover {
+    opacity: 0.9;
+}
+
+/* RowContainer Styles */
+.RowContainer {
+    grid-column: 1 / -1;
+    width: 100%;
+}
+
+.rowHeader {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1rem;
+}
+
+.rowTitle {
+    margin: 0;
+    font-size: 16px;
+    font-weight: 600;
+    color: #0f172a;
+}
+
+.addRowBtn {
+    background: none;
+    border: none;
+    color: #1e74ff;
+    cursor: pointer;
+    font-size: 14px;
+    font-weight: 500;
+}
+
+.addRowBtn:hover {
+    text-decoration: underline;
+}
+
+.rowTableWrapper {
+    overflow-x: auto;
+}
+
+.rowTable {
+    width: 100%;
+    min-width: 800px;
+    border-collapse: collapse;
+}
+
+.rowTableHeadRow {
+    background-color: #f3f4f6;
+}
+
+.rowTableHeadCell {
+    padding: 0.75rem;
+    text-align: center;
+    font-size: 14px;
+    font-weight: 600;
+    border-bottom: 1px solid #e5e7eb;
+}
+
+.rowTableHeadCell:first-child {
+    text-align: left;
+}
+
+.rowTableHeadCell:last-child {
+    text-align: right;
+}
+
+.rowTableHeadCell:nth-child(1) {
+    width: 40%;
+}
+
+.rowTableHeadCell:nth-child(2) {
+    width: 80px;
+}
+
+.rowTableHeadCell:nth-child(3) {
+    width: 120px;
+}
+
+.rowTableCell {
+    padding: 0.75rem;
+    border-bottom: 1px solid #e5e7eb;
+    text-align: center;
+    color: #0f172a;
+}
+
+.rowTableCell:first-child {
+    text-align: left;
+}
+
+.rowTableCell:last-child {
+    text-align: right;
+}
+
+.rowTableCell:nth-child(1) {
+    width: 40%;
+}
+
+.rowTableCell:nth-child(2) {
+    width: 60px;
+}
+
+.rowTableCell:nth-child(3) {
+    width: 120px;
+}
+
+.rowInput {
+    width: 100%;
+    border: 1px solid #d1d5db;
+    border-radius: 6px;
+    padding: 0.5rem;
+    font-size: 14px;
+    outline: none;
+    transition: border-color 0.15s ease;
+}
+
+.rowInput:focus {
+    border-color: #3b82f6;
+    box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.15);
+}
+
+.rowSelect {
+    width: 100%;
+    border: 1px solid #d1d5db;
+    border-radius: 6px;
+    padding: 0.5rem;
+    font-size: 14px;
+    cursor: pointer;
+    outline: none;
+    transition: border-color 0.15s ease;
+}
+
+.rowSelect:focus {
+    border-color: #3b82f6;
+    box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.15);
+}
+
+.deleteRowBtn {
+    background: none;
+    border: none;
+    color: #dc2626;
+    cursor: pointer;
+    font-size: 16px;
+    transition: color 0.2s ease;
+}
+
+.deleteRowBtn:hover {
+    color: #b91c1c;
+}
+
+/* ---------------------- */
+/* Totals Section Styles */
+/* ---------------------- */
+.totalsSection {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    padding: 0;
+}
+
+.totalRow {
+    display: flex;
+    gap: 1rem;
+    align-items: center;
+    justify-content: flex-end;
+    padding: 0;
+}
+
+.totalLabel {
+    font-weight: 600;
+    color: #374151;
+    font-size: 14px;
+    white-space: nowrap;
+}
+
+.totalValue {
+    font-weight: 700;
+    color: #0f172a;
+    font-size: 14px;
+    min-width: 80px;
+    text-align: right;
+}
+
+.grandTotalLabel {
+    font-size: 16px;
+    color: #0f172a;
+    font-weight: 700;
+}
+
+.grandTotalValue {
+    font-size: 16px;
+    color: var(--color-primary-main);
+    font-weight: 700;
 }
