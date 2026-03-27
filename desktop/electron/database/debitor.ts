@@ -19,24 +19,23 @@ export async function createDebitor(
     },
 ){
     if(debitor.email){
-        const existing = await prisma.relation.findFirst({
+        const existing = await prisma.debtor.findFirst({
             where: {
                 email: debitor.email,
                 companyId,
             },
         })
         if (existing) {
-            throw new Error(`A relation with email "${debitor.email}" already exists.`);
+            throw new Error(`A debitor with email "${debitor.email}" already exists.`);
         }
     }
 
     try {
-        return await prisma.relation.create({
+        return await prisma.debtor.create({
             data: {
                 companyId,
                 companyName: debitor.companyName,
                 contactPerson: debitor.contactPerson,
-                type: "DEBTOR",
                 kvkNumber: debitor.kvkNumber,
                 btwNumber: debitor.btwNumber,
                 IBAN: debitor.IBAN,
@@ -59,7 +58,7 @@ export async function getDebitors(userId: number) {
     const company = await prisma.company.findFirst({
         where: {
             users: {
-                some: { id: userId }
+                some: { userId: userId }
             }
         }
     });
@@ -68,19 +67,17 @@ export async function getDebitors(userId: number) {
         throw new Error(`User ${userId} is not part of a company`);
     }
 
-    return prisma.relation.findMany({
+    return prisma.debtor.findMany({
         where: {
-            type: "DEBTOR",
             companyId: company.id,
         }
     });
 }
 
 export async function deleteDebitor(debitorId: number) {
-    await prisma.relation.delete({
+    await prisma.debtor.delete({
         where: {
             id: debitorId,
-            type: "DEBTOR"
         }
     });
 }
@@ -102,10 +99,9 @@ export async function updateDebitor(
     },
     debitorId: number
 ){
-    return prisma.relation.update({
+    return prisma.debtor.update({
         where: {
             id: debitorId,
-            type: "DEBTOR",
         },
         data: {
             companyName: debitor.companyName,

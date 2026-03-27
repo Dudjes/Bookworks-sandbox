@@ -7,12 +7,22 @@ type IpcChannel =
   | "debitor:getDebitors"
   | "debitor:deleteDebitor"
   | "debitor:updateDebitor"
-  | "invoice:createInvoice"
-  | "invoice:generateNumber"
-  | "invoice:getInvoices"
-  | "invoice:updateInvoice"
-  | "invoice:deleteInvoice"
-  | "invoice:getInvoice";
+  | "creditor:createCreditor"
+  | "creditor:getCreditors"
+  | "creditor:deleteCreditor"
+  | "creditor:updateCreditor"
+  | "salesInvoice:generateNumber"
+  | "salesInvoice:createInvoice"
+  | "salesInvoice:getInvoices"
+  | "salesInvoice:updateInvoice"
+  | "salesInvoice:deleteInvoice"
+  | "salesInvoice:getInvoice"
+  | "purchaseInvoice:generateNumber"
+  | "purchaseInvoice:createInvoice"
+  | "purchaseInvoice:getInvoices"
+  | "purchaseInvoice:updateInvoice"
+  | "purchaseInvoice:deleteInvoice"
+  | "purchaseInvoice:getInvoice";
 
 interface Window {
   api?: {

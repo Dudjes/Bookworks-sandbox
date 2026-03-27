@@ -4,7 +4,7 @@ import BaseHeader from "@/components/baseHeader.tsx";
 import MainInput from "@/components/mainInput.tsx";
 import Modal from "@/components/Modal.tsx";
 import { useEffect, useState } from "react";
-import styles from "@/css/debitor.module.css";
+import styles from "@/css/relation.module.css";
 import { IoIosCloseCircleOutline } from "react-icons/io";
 import { validate } from "@/utils/validate.ts";
 import { debitorFormSchema } from "@/schemas/debitor.schema.ts";

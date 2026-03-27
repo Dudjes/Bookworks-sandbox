@@ -7,7 +7,7 @@ import styles from "../css/Auth.module.css";
 import { useUser } from "../context/UserContext.tsx";
 
 type SessionUser = {
-  userID: number;
+  id: number;
   username: string;
   email: string;
   role: string;
@@ -106,7 +106,7 @@ export default function Auth() {
       }
 
       login(user);
-      navigate("/invoices");
+      navigate("/settings");
     } catch (error) {
       console.error(error);
     }
@@ -125,7 +125,7 @@ export default function Auth() {
         console.warn("Electron API bridge is unavailable. Registration is skipped in browser-only dev mode.");
       }
 
-      navigate("/invoices");
+      navigate("/settings");
     } catch (error: unknown) {
       const message = error instanceof Error ? error.message : String(error);
       if (message.includes("EMAIL_EXISTS")) {

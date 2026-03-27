@@ -6,6 +6,7 @@ import { ensureDatabaseSchema } from "./database.js";
 import * as auth from "./database/auth.js";
 import * as company from "./database/company.js";
 import * as debitor from "./database/debitor.js";
+import * as creditor from "./database/creditor.js";
 import * as invoice from "./database/invoice.js"
 import { VAT, InvoiceStatus } from "@prisma/client";
 
@@ -121,60 +122,157 @@ const handlers: Record<string, IpcHandler> = {
       country: string;
     };
   }) => debitor.updateDebitor(payload.debitor, payload.debitorId),
-  "invoice:generateNumber": (userId: number) => invoice.generateInvoiceNumber(userId),
-  "invoice:createInvoice": (payload: {
-    userId: number,
+
+  "creditor:createCreditor": async (payload: {
+    userId: number;
+    creditor: {
+      companyName: string;
+      contactPerson: string;
+      kvkNumber: string;
+      btwNumber: string;
+      IBAN: string;
+      paymentTerm: number;
+      email: string;
+      phonenumber: string;
+      address: string;
+      postcode: string;
+      city: string;
+      country: string;
+    };
+  }) => {
+    const userCompany = await company.getCompanyByUser(payload.userId);
+    if (!userCompany) {
+      throw new Error("User has no company. Please set up company details first.");
+    }
+    return creditor.createCreditor(payload.userId, userCompany.id, payload.creditor);
+  },
+  "creditor:getCreditors": creditor.getCreditors,
+  "creditor:deleteCreditor": creditor.deleteCreditor,
+  "creditor:updateCreditor": (payload: {
+    creditorId: number;
+    creditor: {
+      companyName: string;
+      contactPerson: string;
+      kvkNumber: string;
+      btwNumber: string;
+      IBAN: string;
+      paymentTerm: number;
+      email: string;
+      phonenumber: string;
+      address: string;
+      postcode: string;
+      city: string;
+      country: string;
+    };
+  }) => creditor.updateCreditor(payload.creditor, payload.creditorId),
+
+  "salesInvoice:generateNumber": (userId: number) => invoice.generateSalesInvoiceNumber(userId),
+  "salesInvoice:createInvoice": (payload: {
+    userId: number;
     invoice: {
-        invoiceNumber: string,
-        companyId: number,
-        relationId: number,
-        createdById: number,
-        title: string,
-        invoiceDate: string,
-        dueDate: string,
-        paymentTerm: number,
-        subTotal: number,
-        vatTotal: number,
-        total: number,
-        status: InvoiceStatus,
-    },
+      invoiceNumber: string;
+      companyId: number;
+      debtorId: number;
+      createdById: number;
+      title: string;
+      invoiceDate: string;
+      dueDate: string;
+      paymentTerm: number;
+      subTotal: number;
+      vatTotal: number;
+      total: number;
+      status: InvoiceStatus;
+    };
     invoiceLines: {
-        rowDescription: string,
-        quantity: number,
-        price: number,
-        vat: VAT,
-        lineTotalExcl: number,
-        vatAmount: number,
-        lineTotalIncl: number,
-    }[]
-  }) => invoice.createInvoice(payload.userId, payload.invoice, payload.invoiceLines),
-  "invoice:updateInvoice": (payload: {
-    userId: number,
-    invoiceId: number,
+      rowDescription: string;
+      quantity: number;
+      price: number;
+      vat: VAT;
+      lineTotalExcl: number;
+      vatAmount: number;
+      lineTotalIncl: number;
+    }[];
+  }) => invoice.createSalesInvoice(payload.userId, payload.invoice, payload.invoiceLines),
+  "salesInvoice:getInvoices": (userId: number) => invoice.getSalesInvoices(userId),
+  "salesInvoice:updateInvoice": (payload: {
+    invoiceId: number;
     invoice: {
-        relationId: number,
-        title: string,
-        invoiceDate: string,
-        dueDate: string,
-        paymentTerm: number,
-        subTotal: number,
-        vatTotal: number,
-        total: number,
-        status: InvoiceStatus,
-    },
+      debtorId: number;
+      title: string;
+      invoiceDate: string;
+      dueDate: string;
+      paymentTerm: number;
+      subTotal: number;
+      vatTotal: number;
+      total: number;
+      status: InvoiceStatus;
+    };
     invoiceLines: {
-        rowDescription: string,
-        quantity: number,
-        price: number,
-        vat: VAT,
-        lineTotalExcl: number,
-        vatAmount: number,
-        lineTotalIncl: number,
-    }[]
-  }) => invoice.updateInvoice(payload.invoiceId, payload.invoice, payload.invoiceLines),
-  "invoice:getInvoices": invoice.getInvoices,
-  "invoice:deleteInvoice": invoice.deleteInvoice,
-  "invoice:getInvoice": invoice.getInvoice,
+      rowDescription: string;
+      quantity: number;
+      price: number;
+      vat: VAT;
+      lineTotalExcl: number;
+      vatAmount: number;
+      lineTotalIncl: number;
+    }[];
+  }) => invoice.updateSalesInvoice(payload.invoiceId, payload.invoice, payload.invoiceLines),
+  "salesInvoice:deleteInvoice": (invoiceId: number) => invoice.deleteSalesInvoice(invoiceId),
+  "salesInvoice:getInvoice": (invoiceId: number) => invoice.getSalesInvoice(invoiceId),
+
+  "purchaseInvoice:generateNumber": (userId: number) => invoice.generatePurchaseInvoiceNumber(userId),
+  "purchaseInvoice:createInvoice": (payload: {
+    userId: number;
+    invoice: {
+      invoiceNumber: string;
+      companyId: number;
+      creditorId: number;
+      createdById: number;
+      title: string;
+      invoiceDate: string;
+      dueDate: string;
+      paymentTerm: number;
+      subTotal: number;
+      vatTotal: number;
+      total: number;
+      status: InvoiceStatus;
+    };
+    invoiceLines: {
+      rowDescription: string;
+      quantity: number;
+      price: number;
+      vat: VAT;
+      lineTotalExcl: number;
+      vatAmount: number;
+      lineTotalIncl: number;
+    }[];
+  }) => invoice.createPurchaseInvoice(payload.userId, payload.invoice, payload.invoiceLines),
+  "purchaseInvoice:getInvoices": (userId: number) => invoice.getPurchaseInvoices(userId),
+  "purchaseInvoice:updateInvoice": (payload: {
+    invoiceId: number;
+    invoice: {
+      creditorId: number;
+      title: string;
+      invoiceDate: string;
+      dueDate: string;
+      paymentTerm: number;
+      subTotal: number;
+      vatTotal: number;
+      total: number;
+      status: InvoiceStatus;
+    };
+    invoiceLines: {
+      rowDescription: string;
+      quantity: number;
+      price: number;
+      vat: VAT;
+      lineTotalExcl: number;
+      vatAmount: number;
+      lineTotalIncl: number;
+    }[];
+  }) => invoice.updatePurchaseInvoice(payload.invoiceId, payload.invoice, payload.invoiceLines),
+  "purchaseInvoice:deleteInvoice": (invoiceId: number) => invoice.deletePurchaseInvoice(invoiceId),
+  "purchaseInvoice:getInvoice": (invoiceId: number) => invoice.getPurchaseInvoice(invoiceId),
 };
 
 for (const [channel, handler] of Object.entries(handlers)) {

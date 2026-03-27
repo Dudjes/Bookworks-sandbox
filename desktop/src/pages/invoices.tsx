@@ -11,12 +11,12 @@ import { FaRegEdit, FaRegEye } from "react-icons/fa";
 import { BsDownload } from "react-icons/bs";
 import { RiDeleteBin6Line } from "react-icons/ri";
 import { validate } from "@/utils/validate.ts";
-import { invoiceLineSchema, invoiceSchema } from "@/schemas/invoice.schema.ts";
-import { Invoice as PrismaInvoice, InvoiceStatus, InvoiceLine as PrismaInvoiceLine } from "@prisma/client";
+import { invoiceLineSchema, salesInvoiceSchema } from "@/schemas/invoice.schema.ts";
+import { SalesInvoice as PrismaSalesInvoice, InvoiceStatus, SalesInvoiceLine as PrismaSalesInvoiceLine } from "@prisma/client";
 import { PDFViewer, PDFDownloadLink } from "@react-pdf/renderer";
 import { InvoicePDF } from "./invoicePDF.tsx";
 
-type Debitor = {
+type Debtor = {
   id: number,
   companyName: string,
 }
@@ -32,8 +32,21 @@ type InvoiceLine = {
   lineTotalIncl: number;
 }
 
-type Invoice = Omit<PrismaInvoice, 'subTotal' | 'vatTotal' | 'total' | 'invoiceDate' | 'dueDate'> & {
-  invoiceLines?: PrismaInvoiceLine[];
+type Invoice = {
+  id: number;
+  invoiceNumber: string;
+  companyId: number;
+  debtorId: number;
+  createdById: number;
+  title: string;
+  invoiceDate: string | Date;
+  dueDate: string | Date;
+  paymentTerm: number;
+  subTotal: number;
+  vatTotal: number;
+  total: number;
+  status: InvoiceStatus;
+  invoiceLines?: InvoiceLine[];
   company?: {
     name: string;
     logo?: string;
@@ -47,16 +60,19 @@ type Invoice = Omit<PrismaInvoice, 'subTotal' | 'vatTotal' | 'total' | 'invoiceD
     phone?: string;
     email?: string;
   };
-  subTotal: number;
-  vatTotal: number;
-  total: number;
-  invoiceDate: string | Date;
-  dueDate: string | Date;
-  title: string;
+  debtor?: {
+    id: number;
+    companyName: string;
+    address?: string;
+    postcode?: string;
+    city?: string;
+    country?: string;
+    btwNumber?: string;
+  };
 };
 
 type InvoiceForm = {
-  relationId: string;
+  debtorId: string;
   invoiceDate: string;
   paymentTerm: string;
   dueDate: string;
@@ -65,7 +81,7 @@ type InvoiceForm = {
 }
 
 const defaultForm: InvoiceForm = {
-  relationId: "",
+  debtorId: "",
   invoiceDate: "",
   paymentTerm: "",
   dueDate: "",
@@ -89,7 +105,7 @@ const defaultInvoiceLines: InvoiceLine[] = [
 export default function Invoices(){
     const { user} = useUser();
     const [modalVisible, setModalVisible] = useState(false);
-    const [debitors, setDebitors] = useState<Debitor[]>([]);
+    const [debitors, setDebitors] = useState<Debtor[]>([]);
     const [errors, setErrors] = useState<Partial<Record<keyof typeof form, string>>>({});
     const [invoices, setInvoices] = useState<Invoice[]>([]);
     const [modalType, setModalType] = useState("");
@@ -172,7 +188,7 @@ export default function Invoices(){
     };
 
     const validateInvoice = (invoiceData: any, lines: any[]) => {
-        const validation = validate(invoiceSchema, invoiceData);
+        const validation = validate(salesInvoiceSchema, invoiceData);
         
         let linesValid = true;
         for (const line of lines) {
@@ -195,7 +211,7 @@ export default function Invoices(){
         const formInvoice = {
             invoiceNumber: "",
             companyId: user?.id || 0,
-            relationId: Number(form.relationId),
+            debtorId: Number(form.debtorId),
             createdById: user?.id || 0,
             title: "",
             invoiceDate: form.invoiceDate,
@@ -217,7 +233,7 @@ export default function Invoices(){
         }
 
         try {
-            const invoiceNumber = await window.api?.invoke("invoice:generateNumber", user?.id);
+            const invoiceNumber = await window.api?.invoke("salesInvoice:generateNumber", user?.id);
             console.log("Generated invoice number:", invoiceNumber);
 
             // Convert VAT values to Prisma enum format
@@ -237,7 +253,7 @@ export default function Invoices(){
             };
             
             console.log("Payload to send:", JSON.stringify(payload, null, 2));
-            await window.api?.invoke("invoice:createInvoice", payload);
+            await window.api?.invoke("salesInvoice:createInvoice", payload);
             console.log("Invoice created successfully");
             return true;
         } catch (error) {
@@ -252,7 +268,7 @@ export default function Invoices(){
         const total = cleanInvoiceLines.reduce((sum, line) => sum + line.lineTotalIncl, 0);
 
         const formInvoice = {
-            relationId: Number(form.relationId),
+            debtorId: Number(form.debtorId),
             title: "",
             invoiceDate: form.invoiceDate,
             dueDate: form.dueDate,
@@ -282,7 +298,7 @@ export default function Invoices(){
                 invoiceLines: invoiceLinesToSend
             };
 
-            await window.api?.invoke("invoice:updateInvoice", payload);
+            await window.api?.invoke("salesInvoice:updateInvoice", payload);
             console.log("Invoice updated successfully");
             return true;
         } catch (error) {
@@ -313,7 +329,7 @@ export default function Invoices(){
         try {
             const debitorsList = await window.api?.invoke("debitor:getDebitors", (user?.id));
             console.log(debitorsList);
-            setDebitors(debitorsList as Debitor[]);
+            setDebitors(debitorsList as Debtor[]);
         } catch (error) {
             console.error("debitor:getDebitors failed:", error);
         }
@@ -321,7 +337,7 @@ export default function Invoices(){
 
     const getInvoices = async () => {
         try {
-            const invoiceList = await window.api?.invoke("invoice:getInvoices", (user?.id));
+            const invoiceList = await window.api?.invoke("salesInvoice:getInvoices", (user?.id));
             console.log(invoiceList);
             setInvoices(invoiceList as Invoice[]);
         } catch (error) {
@@ -334,7 +350,7 @@ export default function Invoices(){
         if (!confirmed) return;
         
         try {
-            await window.api?.invoke("invoice:deleteInvoice", invoice.id);
+            await window.api?.invoke("salesInvoice:deleteInvoice", invoice.id);
             console.log("deleting invoice");
             getInvoices();
         } catch (error) {
@@ -365,7 +381,7 @@ export default function Invoices(){
     const openPreview = async (invoice: Invoice) => {
         try {
             // Fetch the full invoice with invoiceLines
-            const fullInvoice = await window.api?.invoke("invoice:getInvoice", invoice.id) as Invoice;
+            const fullInvoice = await window.api?.invoke("salesInvoice:getInvoice", invoice.id) as Invoice;
             setSelectedInvoice(fullInvoice);
             setLogoUrl(fullInvoice.company?.logo || "");
             setPreviewVisible(true);
@@ -396,7 +412,7 @@ export default function Invoices(){
                 invoiceDate: new Date(selectedInvoice.invoiceDate).toISOString().split('T')[0],
                 dueDate: new Date(selectedInvoice.dueDate).toISOString().split('T')[0],
                 paymentTerm: selectedInvoice.paymentTerm.toString(),
-                relationId: selectedInvoice.relationId.toString(),
+                debtorId: selectedInvoice.debtorId.toString(),
                 status: selectedInvoice.status,
                 title: selectedInvoice.title,
             });
@@ -499,8 +515,8 @@ export default function Invoices(){
                                 <label htmlFor="debitor-select" className={styles.formLabel}>Klant*</label>
                                 <select 
                                     id="debitor-select"
-                                    value={form.relationId}
-                                    onChange={(e) => setField("relationId", e.target.value)}
+                                    value={form.debtorId}
+                                    onChange={(e) => setField("debtorId", e.target.value)}
                                     className={styles.formSelect}
                                 >
                                     <option value="" disabled hidden>Selecteer een klant...</option>

@@ -15,8 +15,9 @@ model User {
   created_at DateTime  @default(now())
   updated_at DateTime?
 
-  invoices      Invoice[]     @relation("CreatedInvoices")
-  userCompanies UserCompany[]
+  salesInvoices    SalesInvoice[]     @relation("CreatedSalesInvoices")
+  purchaseInvoices PurchaseInvoice[]  @relation("CreatedPurchaseInvoices")
+  userCompanies    UserCompany[]
 }
 
 model Company {
@@ -37,9 +38,11 @@ model Company {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  users     UserCompany[]
-  invoices  Invoice[]
-  relations Relation[]
+  users            UserCompany[]
+  debtors          Debtor[]
+  creditors        Creditor[]
+  salesInvoices    SalesInvoice[]
+  purchaseInvoices PurchaseInvoice[]
 }
 
 model UserCompany {
@@ -55,12 +58,12 @@ model UserCompany {
   @@unique([userId, companyId])
 }
 
-model Invoice {
+model SalesInvoice {
   id            Int    @id @default(autoincrement())
   invoiceNumber String @unique
 
   companyId   Int
-  relationId  Int
+  debtorId    Int
   createdById Int
 
   title String
@@ -76,13 +79,13 @@ model Invoice {
   status InvoiceStatus @default(DRAFT)
 
   company   Company  @relation(fields: [companyId], references: [id])
-  createdBy User     @relation("CreatedInvoices", fields: [createdById], references: [id])
-  relation  Relation @relation(fields: [relationId], references: [id])
+  createdBy User     @relation("CreatedSalesInvoices", fields: [createdById], references: [id])
+  debtor    Debtor   @relation(fields: [debtorId], references: [id])
 
-  invoiceLines InvoiceLine[]
+  invoiceLines SalesInvoiceLine[]
 }
 
-model InvoiceLine {
+model SalesInvoiceLine {
   id        Int @id @default(autoincrement())
   invoiceId Int
 
@@ -96,17 +99,62 @@ model InvoiceLine {
   vatAmount     Float
   lineTotalIncl Float
 
-  invoice Invoice @relation(fields: [invoiceId], references: [id])
+  invoice SalesInvoice @relation(fields: [invoiceId], references: [id], onDelete: Cascade)
 }
 
-//debiteuren en crediteuren
-model Relation {
+model PurchaseInvoice {
+  id            Int    @id @default(autoincrement())
+  invoiceNumber String @unique
+
+  companyId   Int
+  creditorId  Int
+  createdById Int
+
+  title String
+
+  invoiceDate DateTime
+  dueDate     DateTime
+  paymentTerm Int
+
+  subTotal Decimal
+  vatTotal Decimal
+  total    Decimal
+
+  paymentType PaymentType
+  payedDate DateTime?
+
+  status InvoiceStatus @default(DRAFT)
+
+  company   Company   @relation(fields: [companyId], references: [id])
+  createdBy User      @relation("CreatedPurchaseInvoices", fields: [createdById], references: [id])
+  creditor  Creditor  @relation(fields: [creditorId], references: [id])
+
+  invoiceLines PurchaseInvoiceLine[]
+}
+
+model PurchaseInvoiceLine {
+  id        Int @id @default(autoincrement())
+  invoiceNumber Int
+
+  rowDescription String
+  quantity       Float
+  price          Float
+
+  vat VAT
+
+  lineTotalExcl Float
+  vatAmount     Float
+  lineTotalIncl Float
+
+  invoice PurchaseInvoice @relation(fields: [invoiceNumber], references: [id], onDelete: Cascade)
+}
+
+model Debtor {
   id        Int @id @default(autoincrement())
   companyId Int
 
   companyName   String
   contactPerson String?
-  type          RelationType
 
   kvkNumber   String?
   btwNumber   String?
@@ -124,8 +172,35 @@ model Relation {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  company  Company   @relation(fields: [companyId], references: [id])
-  invoices Invoice[]
+  company       Company        @relation(fields: [companyId], references: [id])
+  salesInvoices SalesInvoice[]
+}
+
+model Creditor {
+  id        Int @id @default(autoincrement())
+  companyId Int
+
+  companyName   String
+  contactPerson String?
+
+  kvkNumber   String?
+  btwNumber   String?
+  IBAN        String?
+  paymentTerm Int
+
+  email       String
+  phonenumber String?
+
+  address  String?
+  postcode String?
+  city     String?
+  country  String?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  company           Company            @relation(fields: [companyId], references: [id])
+  purchaseInvoices  PurchaseInvoice[]
 }
 
 enum VAT {
@@ -134,15 +209,21 @@ enum VAT {
   VAT_21 @map("21%")
 }
 
-enum RelationType {
-  DEBTOR   @map("debitor")
-  CREDITOR @map("creditor")
-}
-
 enum InvoiceStatus {
   //draft, open, payed, due
   DRAFT @map("draft")
   OPEN  @map("open")
   PAYED @map("payed")
   DUE   @map("due")
+}
+
+enum PaymentType {
+  IDEAL
+  BANK_TRANSFER
+  CREDIT_CARD
+  DIRECT_DEBIT
+  CASH
+  PAYPAL
+  CHEQUE
+  OTHER
 }

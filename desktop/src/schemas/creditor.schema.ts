@@ -1,7 +1,7 @@
 import { z } from "zod";
 
 // Form schema for input validation
-export const debitorFormSchema = z.object({
+export const creditorFormSchema = z.object({
     companyName: z.string().min(1, "Bedrijfsnaam is verplicht"),
     contactPerson: z.string().optional(),
     kvkNumber: z.string().optional(),
@@ -17,7 +17,7 @@ export const debitorFormSchema = z.object({
 });
 
 // Database schema
-export const debitorSchema = z.object({
+export const creditorSchema = z.object({
     id: z.number(),
     companyId: z.number(),
     companyName: z.string(),

@@ -5,6 +5,7 @@ import Debitors from "./pages/debitors";
 import { UserProvider } from "./context/UserContext.tsx";
 import SideBar from "./components/sideBar";
 import Settings from "./pages/settings";
+import Creditor from "./pages/creditor.tsx";
 function AppShell() {
   const location = useLocation();
   const showSidebar = location.pathname !== "/";
@@ -17,6 +18,7 @@ function AppShell() {
           <Route path="/" element={<Auth />} />
           <Route path="/invoices" element={<Invoices />} />
           <Route path="/debitors" element={<Debitors />} />
+          <Route path="/creditor" element={<Creditor />} />
           <Route path="/settings" element={<Settings />} />
         </Routes>
       </main>

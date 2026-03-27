@@ -11,12 +11,11 @@ function normalizeInvoiceStatus(status: string | InvoiceStatus): InvoiceStatus {
     throw new Error(`Invalid invoice status: ${status}`);
 }
 
-export async function generateInvoiceNumber(userId: number): Promise<string> {
-    const currentYear = new Date().getFullYear().toString().slice(-2); //Get last 2 digits of year (26 for 2026)
-    const prefix = `${currentYear}/${userId}/`; 
+export async function generateSalesInvoiceNumber(userId: number): Promise<string> {
+    const currentYear = new Date().getFullYear().toString().slice(-2);
+    const prefix = `S${currentYear}/${userId}/`;
 
-    //Find the highest invoice number for this year and user
-    const lastInvoice = await prisma.invoice.findFirst({
+    const lastInvoice = await prisma.salesInvoice.findFirst({
         where: {
             invoiceNumber: {
                 startsWith: prefix,
@@ -29,7 +28,6 @@ export async function generateInvoiceNumber(userId: number): Promise<string> {
 
     let nextNumber = 1;
     if (lastInvoice) {
-        // Extract the auto-increment number from the last invoice number
         const lastNumber = parseInt(lastInvoice.invoiceNumber.split("/")[2], 10);
         nextNumber = lastNumber + 1;
     }
@@ -37,207 +35,244 @@ export async function generateInvoiceNumber(userId: number): Promise<string> {
     return `${prefix}${nextNumber}`;
 }
 
-export async function createInvoice(
+export async function generatePurchaseInvoiceNumber(userId: number): Promise<string> {
+    const currentYear = new Date().getFullYear().toString().slice(-2);
+    const prefix = `P${currentYear}/${userId}/`;
+
+    const lastInvoice = await prisma.purchaseInvoice.findFirst({
+        where: {
+            invoiceNumber: {
+                startsWith: prefix,
+            },
+        },
+        orderBy: {
+            invoiceNumber: "desc",
+        },
+    });
+
+    let nextNumber = 1;
+    if (lastInvoice) {
+        const lastNumber = parseInt(lastInvoice.invoiceNumber.split("/")[2], 10);
+        nextNumber = lastNumber + 1;
+    }
+
+    return `${prefix}${nextNumber}`;
+}
+
+export async function createSalesInvoice(
     userId: number,
     invoice: {
-        invoiceNumber: string,
-        companyId: number,
-        relationId: number,
-        createdById: number,
-        title: string,
-        invoiceDate: string,
-        dueDate: string,
-        paymentTerm: number,
-        subTotal: number,
-        vatTotal: number,
-        total: number,
-        status: string | InvoiceStatus,
+        invoiceNumber: string;
+        companyId: number;
+        debtorId: number;
+        createdById: number;
+        title: string;
+        invoiceDate: string;
+        dueDate: string;
+        paymentTerm: number;
+        subTotal: number;
+        vatTotal: number;
+        total: number;
+        status: string | InvoiceStatus;
     },
     invoiceLines: {
-        rowDescription: string,
-        quantity: number,
-        price: number,
-        vat: VAT,
-        lineTotalExcl: number,
-        vatAmount: number,
-        lineTotalIncl: number,
+        rowDescription: string;
+        quantity: number;
+        price: number;
+        vat: VAT;
+        lineTotalExcl: number;
+        vatAmount: number;
+        lineTotalIncl: number;
     }[]
-){
+) {
     if (invoiceLines.length === 0) {
         throw new Error("An invoice must have at least one line.");
     }
 
-    if(invoice.invoiceNumber){
-        const existing = await prisma.invoice.findFirst({
-            where : {
+    if (invoice.invoiceNumber) {
+        const existing = await prisma.salesInvoice.findFirst({
+            where: {
                 invoiceNumber: invoice.invoiceNumber,
             }
-        })
-        if(existing){
-            throw new Error(`A invoice with this number "${invoice.invoiceNumber}" already exists.`);
+        });
+        if (existing) {
+            throw new Error(`A sales invoice with this number "${invoice.invoiceNumber}" already exists.`);
         }
     }
 
     try {
-        const created = await prisma.invoice.create({
+        const created = await prisma.salesInvoice.create({
             data: {
                 invoiceNumber: invoice.invoiceNumber,
-                companyId:     invoice.companyId,
-                relationId:    invoice.relationId,
-                createdById:   invoice.createdById,
-                title:         invoice.title,
-                invoiceDate:   new Date(invoice.invoiceDate),
-                dueDate:       new Date(invoice.dueDate),
-                paymentTerm:   invoice.paymentTerm,
-                subTotal:      parseFloat(String(invoice.subTotal)),
-                vatTotal:      parseFloat(String(invoice.vatTotal)),
-                total:         parseFloat(String(invoice.total)),
-                status:        normalizeInvoiceStatus(invoice.status),
+                companyId: invoice.companyId,
+                debtorId: invoice.debtorId,
+                createdById: invoice.createdById,
+                title: invoice.title,
+                invoiceDate: new Date(invoice.invoiceDate),
+                dueDate: new Date(invoice.dueDate),
+                paymentTerm: invoice.paymentTerm,
+                subTotal: parseFloat(String(invoice.subTotal)),
+                vatTotal: parseFloat(String(invoice.vatTotal)),
+                total: parseFloat(String(invoice.total)),
+                status: normalizeInvoiceStatus(invoice.status),
                 invoiceLines: {
                     create: invoiceLines.map((line) => ({
                         rowDescription: line.rowDescription,
-                        quantity:       line.quantity,
-                        price:          line.price,
-                        vat:            line.vat,
-                        lineTotalExcl:  line.lineTotalExcl,
-                        vatAmount:      line.vatAmount,
-                        lineTotalIncl:  line.lineTotalIncl,
+                        quantity: line.quantity,
+                        price: line.price,
+                        vat: line.vat,
+                        lineTotalExcl: line.lineTotalExcl,
+                        vatAmount: line.vatAmount,
+                        lineTotalIncl: line.lineTotalIncl,
                     })),
                 },
             },
             include: {
-                invoiceLines: true, // return the lines in the response
+                invoiceLines: true,
             },
         });
 
-        console.log("Created invoice with amounts:", { subTotal: created.subTotal, vatTotal: created.vatTotal, total: created.total });
+        console.log("Created sales invoice with amounts:", { subTotal: created.subTotal, vatTotal: created.vatTotal, total: created.total });
 
-        // Electron IPC requires structured-cloneable return values.
-        // Prisma Decimal instances are not cloneable, so return plain JSON data.
         return JSON.parse(JSON.stringify(created));
     } catch (error) {
-        throw new Error(`Failed to create invoice: ${(error as Error).message}`);
+        throw new Error(`Failed to create sales invoice: ${(error as Error).message}`);
     }
 }
 
-export async function getInvoices(userId: number) {
-  const invoices = await prisma.invoice.findMany({
-    where: { createdById: userId },
-    include: {
-      invoiceLines: true,
-      relation: true,
-    },
-  });
 
-  if (invoices.length === 0) {
-    throw new Error("There are no invoices");
-  }
-
-  // Electron IPC requires structured-cloneable return values.
-  // Prisma Decimal instances are not cloneable, so convert to numbers and return plain JSON data.
-  return invoices.map(invoice => ({
-    ...invoice,
-    subTotal: Number(invoice.subTotal),
-    vatTotal: Number(invoice.vatTotal),
-    total: Number(invoice.total),
-  }));
-}
-
-export async function updateInvoice(
-  invoiceId: number,
-  invoice: {
-    relationId: number;
-    title: string;
-    invoiceDate: string;
-    dueDate: string;
-    paymentTerm: number;
-    subTotal: number;
-    vatTotal: number;
-    total: number;
-    status: InvoiceStatus;
-  },
-  invoiceLines: {
-    rowDescription: string;
-    quantity: number;
-    price: number;
-    vat: VAT;
-    lineTotalExcl: number;
-    vatAmount: number;
-    lineTotalIncl: number;
-  }[]
-) {
-  try {
-    const updateData = {
-      relationId: invoice.relationId,
-      title: invoice.title,
-      invoiceDate: new Date(invoice.invoiceDate),
-      dueDate: new Date(invoice.dueDate),
-      paymentTerm: invoice.paymentTerm,
-      subTotal: parseFloat(String(invoice.subTotal)),
-      vatTotal: parseFloat(String(invoice.vatTotal)),
-      total: parseFloat(String(invoice.total)),
-      status: invoice.status,
-    };
-
-    const updated = await prisma.$transaction(async (tx) => {
-      await tx.invoiceLine.deleteMany({ where: { invoiceId } });
-
-      return tx.invoice.update({
-        where: { id: invoiceId },
-        data: {
-          ...updateData,
-          invoiceLines: { create: invoiceLines },
+export async function getSalesInvoices(userId: number) {
+    const invoices = await prisma.salesInvoice.findMany({
+        where: { createdById: userId },
+        include: {
+            invoiceLines: true,
+            debtor: true,
+            company: true,
         },
-        include: { invoiceLines: true },
-      });
     });
 
-    console.log("Updated invoice with amounts:", { subTotal: updated.subTotal, vatTotal: updated.vatTotal, total: updated.total });
+    if (invoices.length === 0) {
+        return [];
+    }
 
-    // Convert to structured-cloneable format
-    return JSON.parse(JSON.stringify({
-      ...updated,
-      subTotal: Number(updated.subTotal),
-      vatTotal: Number(updated.vatTotal),
-      total: Number(updated.total),
+    return invoices.map(invoice => ({
+        ...invoice,
+        subTotal: Number(invoice.subTotal),
+        vatTotal: Number(invoice.vatTotal),
+        total: Number(invoice.total),
     }));
-  } catch (error) {
-    throw new Error(`Failed to update invoice: ${(error as Error).message}`);
-  }
 }
 
-export async function deleteInvoice(invoiceId: number){
-    const invoice = await prisma.invoice.findUnique({where: {id: invoiceId}});
+export async function updateSalesInvoice(
+    invoiceId: number,
+    invoice: {
+        debtorId: number;
+        title: string;
+        invoiceDate: string;
+        dueDate: string;
+        paymentTerm: number;
+        subTotal: number;
+        vatTotal: number;
+        total: number;
+        status: InvoiceStatus;
+    },
+    invoiceLines: {
+        rowDescription: string;
+        quantity: number;
+        price: number;
+        vat: VAT;
+        lineTotalExcl: number;
+        vatAmount: number;
+        lineTotalIncl: number;
+    }[]
+) {
+    try {
+        const updateData = {
+            debtorId: invoice.debtorId,
+            title: invoice.title,
+            invoiceDate: new Date(invoice.invoiceDate),
+            dueDate: new Date(invoice.dueDate),
+            paymentTerm: invoice.paymentTerm,
+            subTotal: parseFloat(String(invoice.subTotal)),
+            vatTotal: parseFloat(String(invoice.vatTotal)),
+            total: parseFloat(String(invoice.total)),
+            status: invoice.status,
+        };
 
-    if(!invoice) throw new Error("Invoice not found");
-    if(invoice.status !== "DRAFT") throw new Error("Only draft invoices can be deleted");
+        const updated = await prisma.$transaction(async (tx) => {
+            await tx.salesInvoiceLine.deleteMany({ where: { invoiceId: invoiceId } });
+
+            const updatedInvoice = await tx.salesInvoice.update({
+                where: { id: invoiceId },
+                data: updateData,
+            });
+
+            await tx.salesInvoiceLine.createMany({
+                data: invoiceLines.map((line) => ({
+                    invoiceId: invoiceId,
+                    rowDescription: line.rowDescription,
+                    quantity: line.quantity,
+                    price: line.price,
+                    vat: line.vat,
+                    lineTotalExcl: line.lineTotalExcl,
+                    vatAmount: line.vatAmount,
+                    lineTotalIncl: line.lineTotalIncl,
+                })),
+            });
+
+            return tx.salesInvoice.findUnique({
+                where: { id: invoiceId },
+                include: {
+                    invoiceLines: true,
+                    debtor: true,
+                    company: true,
+                },
+            });
+        });
+
+        console.log("Updated sales invoice with amounts:", { subTotal: updated?.subTotal, vatTotal: updated?.vatTotal, total: updated?.total });
+
+        return JSON.parse(JSON.stringify({
+            ...updated,
+            subTotal: Number(updated?.subTotal),
+            vatTotal: Number(updated?.vatTotal),
+            total: Number(updated?.total),
+        }));
+    } catch (error) {
+        throw new Error(`Failed to update sales invoice: ${(error as Error).message}`);
+    }
+}
+
+export async function deleteSalesInvoice(invoiceId: number) {
+    const invoice = await prisma.salesInvoice.findUnique({ where: { id: invoiceId } });
+
+    if (!invoice) throw new Error("Sales invoice not found");
+    if (invoice.status !== "DRAFT") throw new Error("Only draft sales invoices can be deleted");
 
     return prisma.$transaction(async (tx) => {
-        await tx.invoiceLine.deleteMany({where: {invoiceId}});
-        await tx.invoice.delete({where: {id: invoiceId}});
-    })
+        await tx.salesInvoiceLine.deleteMany({ where: { invoiceId } });
+        await tx.salesInvoice.delete({ where: { id: invoiceId } });
+    });
 }
 
-export async function getInvoice(invoiceId: number) {
-  const invoice = await prisma.invoice.findFirst({
-    where: { id: invoiceId },
-    include: {
-      invoiceLines: true,
-      relation: true,
-      company: true,
-    },
-  });
+export async function getSalesInvoice(invoiceId: number) {
+    const invoice = await prisma.salesInvoice.findFirst({
+        where: { id: invoiceId },
+        include: {
+            invoiceLines: true,
+            debtor: true,
+            company: true,
+        },
+    });
 
-  if (!invoice) {
-    throw new Error("Invoice not found");
-  }
+    if (!invoice) {
+        throw new Error("Sales invoice not found");
+    }
 
-  // Electron IPC requires structured-cloneable return values.
-  // Prisma Decimal instances are not cloneable, so convert to numbers and return plain JSON data.
-  return JSON.parse(JSON.stringify({
-    ...invoice,
-    subTotal: Number(invoice.subTotal),
-    vatTotal: Number(invoice.vatTotal),
-    total: Number(invoice.total),
-  }));
+    return JSON.parse(JSON.stringify({
+        ...invoice,
+        subTotal: Number(invoice.subTotal),
+        vatTotal: Number(invoice.vatTotal),
+        total: Number(invoice.total),
+    }));
 }
