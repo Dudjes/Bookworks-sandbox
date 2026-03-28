@@ -47,6 +47,14 @@ export async function ensureDatabaseSchema() {
     // Column likely already exists, ignore error
   }
 
+  try {
+    await prisma.$executeRawUnsafe(`
+      ALTER TABLE "Creditor" ADD COLUMN "paymentTerm" INTEGER NOT NULL DEFAULT 0;
+    `);
+  } catch (e) {
+    // Column likely already exists, ignore error
+  }
+
   await prisma.$executeRawUnsafe(`
     CREATE TABLE IF NOT EXISTS "User" (
       "id" INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,

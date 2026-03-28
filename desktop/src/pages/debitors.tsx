@@ -196,13 +196,13 @@ export default function Debitors() {
         searchAriaLabel="Zoek debiteuren"
         onButtonClick={() => setModalVisible(true)}
       />
-        <div className={styles.debitorsContainer}>
+        <div className={styles.relationsContainer}>
           {debitors.map((debitor) => (
-              <div className={styles.debitorContainer} key={`${debitor.companyName}-${debitor.email}`}>
-                <div className={styles.debitorHeader}>
-                  <div className={styles.debitorTitleGroup}>
-                    <h3 className={styles.debitorTitle}>{debitor.companyName}</h3>
-                    <p className={styles.debitorContact}>{debitor.contactPerson}</p>
+              <div className={styles.relationContainer} key={`${debitor.companyName}-${debitor.email}`}>
+                <div className={styles.relationHeader}>
+                  <div className={styles.relationTitleGroup}>
+                    <h3 className={styles.relationTitle}>{debitor.companyName}</h3>
+                    <p className={styles.relationContact}>{debitor.contactPerson}</p>
                   </div>
                   <div className={styles.iconActions}>
                     <button 
@@ -232,16 +232,16 @@ export default function Debitors() {
                   </div>
                 </div>
 
-                <div className={styles.debitorTopInfo}>
-                  <div className={styles.debitorInfo}>
+                <div className={styles.relationTopInfo}>
+                  <div className={styles.relationInfo}>
                     <CiMail />
                     <p>{debitor.email}</p>
                   </div>
-                  <div className={styles.debitorInfo}>
+                  <div className={styles.relationInfo}>
                     <FaPhoneAlt />
                     <p>{debitor.phonenumber}</p>
                   </div>
-                  <div className={styles.debitorInfo}>
+                  <div className={styles.relationInfo}>
                     <MdLocationOn />
                     <p>{debitor.address} {debitor.postcode} {debitor.city}</p>
                   </div>
