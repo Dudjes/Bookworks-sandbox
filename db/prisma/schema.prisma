@@ -134,7 +134,7 @@ model PurchaseInvoice {
 
 model PurchaseInvoiceLine {
   id        Int @id @default(autoincrement())
-  invoiceNumber Int
+  invoiceId Int
 
   rowDescription String
   quantity       Float
@@ -146,7 +146,7 @@ model PurchaseInvoiceLine {
   vatAmount     Float
   lineTotalIncl Float
 
-  invoice PurchaseInvoice @relation(fields: [invoiceNumber], references: [id], onDelete: Cascade)
+  invoice PurchaseInvoice @relation(fields: [invoiceId], references: [id], onDelete: Cascade)
 }
 
 model Debtor {

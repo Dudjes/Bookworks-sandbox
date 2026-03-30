@@ -58,13 +58,13 @@ export function InvoicePDF({ invoice }: { invoice: Invoice }) {
                             )}
                             <View style={styles.recieverInfo}>
                                 <Text>{invoice.relation?.companyName || "Bedrijf naam"}</Text>
-                                <Text>{invoice.relation?.address || "address" } {invoice.relation?.postcode || "postcode"}</Text>
+                                <Text>{invoice.relation?.address || "adres" } {invoice.relation?.postcode || "postcode"}</Text>
                                 <Text>{invoice.relation?.city || "stad" } {invoice.relation?.country || "land"}</Text>
                             </View>
                         </View>
                         <View style={styles.senderInfoContainer}>
                             <View style={styles.senderRow}>
-                                <Text style={styles.senderLabel}>Address:</Text>
+                                <Text style={styles.senderLabel}>Adres:</Text>
                                 <View>
                                     <Text style={[styles.senderValue, {fontWeight: 600, fontSize: 12}]}>{invoice.company?.name}</Text>
                                     <Text style={styles.senderValue}>{invoice.company?.address}</Text>
@@ -125,7 +125,7 @@ export function InvoicePDF({ invoice }: { invoice: Invoice }) {
                 </View>
 
                 <View style={styles.bottomSection}>
-                    <View style={styles.totalsContainer}>
+                        <View style={styles.totalsContainer}>
                         <View style={styles.totalsRow}>
                             <Text style={styles.totalsLabel}>Subtotaal</Text>
                             <Text>:</Text>
@@ -133,13 +133,13 @@ export function InvoicePDF({ invoice }: { invoice: Invoice }) {
                             <Text style={styles.totalsAmount}>{invoice.subTotal.toFixed(2)}</Text>
                         </View>
                         <View style={styles.totalsRow}>
-                            <Text style={styles.totalsLabel}>Btw totaal</Text>
+                            <Text style={styles.totalsLabel}>BTW-totaal</Text>
                             <Text>:</Text>
                             <Text style={styles.totalsValue}>EUR</Text>
                             <Text style={styles.totalsAmount}>{invoice.vatTotal.toFixed(2)}</Text>
                         </View>
                         <View style={[styles.totalsRow, styles.totalsFinal]}>
-                            <Text style={[styles.totalsLabel, { fontWeight: 'bold' }]}>Total</Text>
+                            <Text style={[styles.totalsLabel, { fontWeight: 'bold' }]}>Totaal</Text>
                             <Text>:</Text>
                             <Text style={[styles.totalsValue, { fontWeight: 'bold' }]}>EUR</Text>
                             <Text style={[styles.totalsAmount, { fontWeight: 'bold' }]}>{invoice.total.toFixed(2)}</Text>

@@ -47,6 +47,46 @@ export async function ensureDatabaseSchema() {
     // Column likely already exists, ignore error
   }
 
+  // Ensure companyId column exists on PurchaseInvoice for older DBs
+  try {
+    await prisma.$executeRawUnsafe(`
+      ALTER TABLE "PurchaseInvoice" ADD COLUMN "companyId" INTEGER NOT NULL DEFAULT 0;
+    `);
+  } catch (e) {
+    // Column likely already exists, ignore error
+  }
+
+  // Ensure createdById column exists on PurchaseInvoice for older DBs
+  try {
+    await prisma.$executeRawUnsafe(`
+      ALTER TABLE "PurchaseInvoice" ADD COLUMN "createdById" INTEGER NOT NULL DEFAULT 0;
+    `);
+  } catch (e) {
+    // Column likely already exists, ignore error
+  }
+
+  // Legacy `recievedDate` recreation logic removed to keep SQL matching Prisma schema.
+
+  // Ensure invoiceNumber column exists on PurchaseInvoice for older DBs
+  try {
+    const info: Array<any> = await prisma.$queryRawUnsafe(`PRAGMA table_info("PurchaseInvoice");`);
+    const invoiceNumberCol = info.find((c: any) => c.name === "invoiceNumber");
+
+    if (!invoiceNumberCol) {
+      try {
+        await prisma.$executeRawUnsafe(`BEGIN TRANSACTION;`);
+        await prisma.$executeRawUnsafe(`ALTER TABLE "PurchaseInvoice" ADD COLUMN "invoiceNumber" TEXT;`);
+        await prisma.$executeRawUnsafe(`UPDATE "PurchaseInvoice" SET "invoiceNumber" = 'P' || strftime('%y','now') || '/0/' || id WHERE "invoiceNumber" IS NULL OR "invoiceNumber" = '';`);
+        await prisma.$executeRawUnsafe(`CREATE UNIQUE INDEX IF NOT EXISTS "PurchaseInvoice_invoiceNumber_key" ON "PurchaseInvoice" ("invoiceNumber");`);
+        await prisma.$executeRawUnsafe(`COMMIT;`);
+      } catch (e) {
+        try { await prisma.$executeRawUnsafe(`ROLLBACK;`); } catch {};
+      }
+    }
+  } catch (e) {
+    // best-effort only
+  }
+
   try {
     await prisma.$executeRawUnsafe(`
       ALTER TABLE "Creditor" ADD COLUMN "paymentTerm" INTEGER NOT NULL DEFAULT 0;

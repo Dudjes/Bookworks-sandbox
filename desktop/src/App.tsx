@@ -1,6 +1,7 @@
 import { BrowserRouter, Routes, Route, useLocation } from "react-router-dom";
 import Auth from "./pages/Auth";
 import Invoices from "./pages/invoices";
+import PurchaseInvoices from "./pages/purchaseInvoices";
 import Debitors from "./pages/debitors";
 import { UserProvider } from "./context/UserContext.tsx";
 import SideBar from "./components/sideBar";
@@ -16,7 +17,8 @@ function AppShell() {
       <main className="content" style={{ marginLeft: showSidebar ? "var(--sidebar-width)" : "0" }}>
         <Routes>
           <Route path="/" element={<Auth />} />
-          <Route path="/invoices" element={<Invoices />} />
+          <Route path="/sales-invoices" element={<Invoices />} />
+          <Route path="/purchase-invoices" element={<PurchaseInvoices />} />
           <Route path="/debitors" element={<Debitors />} />
           <Route path="/creditor" element={<Creditor />} />
           <Route path="/settings" element={<Settings />} />
