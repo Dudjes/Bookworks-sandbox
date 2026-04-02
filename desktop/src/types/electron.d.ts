@@ -22,7 +22,11 @@ type IpcChannel =
   | "purchaseInvoice:getInvoices"
   | "purchaseInvoice:updateInvoice"
   | "purchaseInvoice:deleteInvoice"
-  | "purchaseInvoice:getInvoice";
+  | "purchaseInvoice:getInvoice"
+  | "ledger:getLedgers"
+  | "ledger:createLedger"
+  | "ledger:deleteLedger"
+  | "ledger:updateLedger";
 
 interface Window {
   api?: {

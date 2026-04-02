@@ -7,6 +7,7 @@ import { UserProvider } from "./context/UserContext.tsx";
 import SideBar from "./components/sideBar";
 import Settings from "./pages/settings";
 import Creditor from "./pages/creditor.tsx";
+import Ledger from "./pages/ledger.tsx";
 function AppShell() {
   const location = useLocation();
   const showSidebar = location.pathname !== "/";
@@ -16,12 +17,13 @@ function AppShell() {
       {showSidebar && <SideBar />}
       <main className="content" style={{ marginLeft: showSidebar ? "var(--sidebar-width)" : "0" }}>
         <Routes>
-          <Route path="/" element={<Auth />} />
-          <Route path="/sales-invoices" element={<Invoices />} />
+          <Route path="/"                  element={<Auth />} />
+          <Route path="/sales-invoices"    element={<Invoices />} />
           <Route path="/purchase-invoices" element={<PurchaseInvoices />} />
-          <Route path="/debitors" element={<Debitors />} />
-          <Route path="/creditor" element={<Creditor />} />
-          <Route path="/settings" element={<Settings />} />
+          <Route path="/debitors"          element={<Debitors />} />
+          <Route path="/creditor"          element={<Creditor />} />
+          <Route path="/ledger"            element={<Ledger />} />
+          <Route path="/settings"          element={<Settings />} />
         </Routes>
       </main>
     </div>

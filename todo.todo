@@ -1,17 +1,9 @@
 d :debiteuren
     je kan alleen debiteuren verwijderen wanneer ze geen facturen open hebben staan
 
-rd: verkoopfacturen:
-    je kan je factuur zien als je op het oogje klikt aka the read
-    je kan je verkoopfacturen exporteren als pdf
-    factuur titel bij de factuur toevoegen 
-    factuur subtotalen en totaal zichtbaar in modal
-
 searchbar:
     verkoopfacturen 
     debiteuren
-
-cud: grootboek:
 
 instellingen: 
     Applicatie instellingen

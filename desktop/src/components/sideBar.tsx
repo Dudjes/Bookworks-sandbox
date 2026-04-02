@@ -34,7 +34,7 @@ export default function SideBar() {
         { label: "Transacties", link: "/", icon: <FiRepeat size={18} /> },
         { label: "BTW-Aangifte", link: "/", icon: <FiPercent size={18} /> },
         { label: "Rapportages", link: "/", icon: <FiBarChart2 size={18} /> },
-        { label: "Grootboek", link: "/", icon: <FiBookOpen size={18} /> },
+        { label: "Grootboek", link: "/ledger", icon: <FiBookOpen size={18} /> },
         { label: "Instellingen", link: "/settings", icon: <FiSettings size={18} /> },
     ];
 

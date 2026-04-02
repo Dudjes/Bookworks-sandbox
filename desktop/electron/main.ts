@@ -8,6 +8,7 @@ import * as company from "./database/company.js";
 import * as debitor from "./database/debitor.js";
 import * as creditor from "./database/creditor.js";
 import * as invoice from "./database/invoice.js"
+import * as ledger from "./database/ledger.js";
 import { VAT, InvoiceStatus } from "@prisma/client";
 
 const __filename = fileURLToPath(import.meta.url);
@@ -273,6 +274,34 @@ const handlers: Record<string, IpcHandler> = {
   }) => invoice.updatePurchaseInvoice(payload.invoiceId, payload.invoice, payload.invoiceLines),
   "purchaseInvoice:deleteInvoice": (invoiceId: number) => invoice.deletePurchaseInvoice(invoiceId),
   "purchaseInvoice:getInvoice": (invoiceId: number) => invoice.getPurchaseInvoice(invoiceId),
+
+  "ledger:getLedgers": ledger.getLedgers,
+  "ledger:createLedger": (payload: {
+    userId: number;
+    ledger: {
+      number: number;
+      name: string;
+      type: string;
+      category: string;
+    };
+  }) => ledger.createLedger(payload.userId, {
+    ...payload.ledger,
+    systemMade: false,
+  }),
+  "ledger:deleteLedger": (payload: {
+    userId: number;
+    ledgerId: number;
+  }) => ledger.deleteLedger(payload.userId, payload.ledgerId),
+  "ledger:updateLedger": (payload: {
+    userId: number;
+    ledgerId: number;
+    ledger: {
+      number: number;
+      name: string;
+      type: string;
+      category: string;
+    };
+  }) => ledger.updateLedger(payload.userId, payload.ledgerId, payload.ledger),
 };
 
 for (const [channel, handler] of Object.entries(handlers)) {

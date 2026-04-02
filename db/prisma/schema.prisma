@@ -18,6 +18,7 @@ model User {
   salesInvoices    SalesInvoice[]     @relation("CreatedSalesInvoices")
   purchaseInvoices PurchaseInvoice[]  @relation("CreatedPurchaseInvoices")
   userCompanies    UserCompany[]
+  ledgers          Ledger[]
 }
 
 model Company {
@@ -202,6 +203,43 @@ model Creditor {
   company           Company            @relation(fields: [companyId], references: [id])
   purchaseInvoices  PurchaseInvoice[]
 }
+
+model Ledger{
+  id Int @id @default(autoincrement())
+  number Int
+  name String
+  type String
+  category String
+  systemMade Boolean
+
+  userId Int?
+  user   User? @relation(fields: [userId], references: [id], onDelete: SetNull)
+
+  lines transactionLine[]
+}
+
+model Transaction{
+  id Int @id @default(autoincrement())
+  date DateTime
+  description String
+  reference String
+  lines transactionLine[]
+}
+
+model transactionLine{
+  id Int @id @default(autoincrement())
+
+  transactionId Int
+  transaction Transaction @relation(fields: [transactionId], references: [id])
+
+  ledgerId Int
+  ledger Ledger @relation(fields: [ledgerId], references: [id])
+
+  type String
+  amount Decimal
+}
+
+
 
 enum VAT {
   VAT_0  @map("0")
