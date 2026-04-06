@@ -104,13 +104,15 @@ export default function Debitors() {
 
   const deleteDebitor = async () => {
     if (!selectedDebitorId) return;
-      try {
-          await window.api?.invoke("debitor:deleteDebitor", selectedDebitorId);
-          setSelectedDebitorId(null);
-          getDebitors();
-      } catch (error) {
-          console.error(error);
-      }
+
+    try {
+        await window.api?.invoke("debitor:deleteDebitor", selectedDebitorId);
+        setSelectedDebitorId(null);
+        getDebitors();
+    } catch (error) {
+        window.alert("Deze debiteur kan niet worden verwijderd omdat er facturen aan gekoppeld zijn.");
+        setSelectedDebitorId(null);
+    }
   }
 
   const updateDebitor = async () => {
@@ -223,8 +225,8 @@ export default function Debitors() {
                       className={styles.iconButtonDelete} 
                       aria-label="Debiteur verwijderen" 
                       onClick={() => {
-                        setAlertVisible(true)
                         setSelectedDebitorId(debitor.id);
+                        setAlertVisible(true);
                       }}
                     >
                       <MdDeleteForever size={20} />

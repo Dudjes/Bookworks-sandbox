@@ -1,6 +1,3 @@
-d :debiteuren
-    je kan alleen debiteuren verwijderen wanneer ze geen facturen open hebben staan
-
 searchbar:
     verkoopfacturen 
     debiteuren
@@ -14,3 +11,7 @@ belangrijk:
     als je geen bedrijf hebt na regi of inlog ga je naar settings. Als je wel 1 hebt ga je naar dashboard
     je ziet een text als je van iets geen hebt zoals geen debiteuren terwijl je in debiteuren pagina zit
 
+transacties:
+    Bij maken van transactie kies een grootboekrekening zoals crediteur of debiteur.
+    Daarna kies je een crediteur of debiteur. 
+    Na het kiezen klik je op 1 van de openstaande factures om te connecten aan de transactie

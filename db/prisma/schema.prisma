@@ -15,8 +15,8 @@ model User {
   created_at DateTime  @default(now())
   updated_at DateTime?
 
-  salesInvoices    SalesInvoice[]     @relation("CreatedSalesInvoices")
-  purchaseInvoices PurchaseInvoice[]  @relation("CreatedPurchaseInvoices")
+  salesInvoices    SalesInvoice[]    @relation("CreatedSalesInvoices")
+  purchaseInvoices PurchaseInvoice[] @relation("CreatedPurchaseInvoices")
   userCompanies    UserCompany[]
   ledgers          Ledger[]
 }
@@ -34,7 +34,7 @@ model Company {
   phone     String?
   email     String?
   website   String?
-  logo     String?
+  logo      String?
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -79,11 +79,12 @@ model SalesInvoice {
 
   status InvoiceStatus @default(DRAFT)
 
-  company   Company  @relation(fields: [companyId], references: [id])
-  createdBy User     @relation("CreatedSalesInvoices", fields: [createdById], references: [id])
-  debtor    Debtor   @relation(fields: [debtorId], references: [id])
+  company   Company @relation(fields: [companyId], references: [id])
+  createdBy User    @relation("CreatedSalesInvoices", fields: [createdById], references: [id])
+  debtor    Debtor  @relation(fields: [debtorId], references: [id])
 
   invoiceLines SalesInvoiceLine[]
+  transactions Transaction[]
 }
 
 model SalesInvoiceLine {
@@ -122,15 +123,16 @@ model PurchaseInvoice {
   total    Decimal
 
   paymentType PaymentType
-  payedDate DateTime?
+  payedDate   DateTime?
 
   status InvoiceStatus @default(DRAFT)
 
-  company   Company   @relation(fields: [companyId], references: [id])
-  createdBy User      @relation("CreatedPurchaseInvoices", fields: [createdById], references: [id])
-  creditor  Creditor  @relation(fields: [creditorId], references: [id])
+  company   Company  @relation(fields: [companyId], references: [id])
+  createdBy User     @relation("CreatedPurchaseInvoices", fields: [createdById], references: [id])
+  creditor  Creditor @relation(fields: [creditorId], references: [id])
 
   invoiceLines PurchaseInvoiceLine[]
+  transactions Transaction[]
 }
 
 model PurchaseInvoiceLine {
@@ -200,16 +202,16 @@ model Creditor {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  company           Company            @relation(fields: [companyId], references: [id])
-  purchaseInvoices  PurchaseInvoice[]
+  company          Company           @relation(fields: [companyId], references: [id])
+  purchaseInvoices PurchaseInvoice[]
 }
 
-model Ledger{
-  id Int @id @default(autoincrement())
-  number Int
-  name String
-  type String
-  category String
+model Ledger {
+  id         Int     @id @default(autoincrement())
+  number     Int
+  name       String
+  type       String
+  category   String
   systemMade Boolean
 
   userId Int?
@@ -218,28 +220,35 @@ model Ledger{
   lines transactionLine[]
 }
 
-model Transaction{
-  id Int @id @default(autoincrement())
-  date DateTime
+model Transaction {
+  id          Int      @id @default(autoincrement())
+  date        DateTime
   description String
-  reference String
+  reference   String
+  amount      Decimal
+  type        String //negative or positive amount
+
+  salesInvoiceId Int?
+  salesInvoice   SalesInvoice? @relation(fields: [salesInvoiceId], references: [id])
+
+  purchaseInvoiceId Int?
+  purchaseInvoice   PurchaseInvoice? @relation(fields: [purchaseInvoiceId], references: [id])
+
   lines transactionLine[]
 }
 
-model transactionLine{
+model transactionLine {
   id Int @id @default(autoincrement())
 
   transactionId Int
-  transaction Transaction @relation(fields: [transactionId], references: [id])
+  transaction   Transaction @relation(fields: [transactionId], references: [id])
 
   ledgerId Int
-  ledger Ledger @relation(fields: [ledgerId], references: [id])
+  ledger   Ledger @relation(fields: [ledgerId], references: [id])
 
-  type String
+  type   String
   amount Decimal
 }
-
-
 
 enum VAT {
   VAT_0  @map("0")

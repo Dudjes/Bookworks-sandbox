@@ -74,7 +74,23 @@ export async function getDebitors(userId: number) {
     });
 }
 
+export async function debitorHasInvoices(debitorId: number): Promise<boolean> {
+    const invoiceCount = await prisma.salesInvoice.count({
+        where: {
+            debtorId: debitorId,
+        }
+    });
+    
+    return invoiceCount > 0;
+}
+
 export async function deleteDebitor(debitorId: number) {
+    const hasInvoices = await debitorHasInvoices(debitorId);
+    
+    if (hasInvoices) {
+        throw new Error("Cannot delete debitor with existing invoices");
+    }
+
     await prisma.debtor.delete({
         where: {
             id: debitorId,
