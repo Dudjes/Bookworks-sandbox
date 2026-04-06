@@ -84,7 +84,7 @@ model SalesInvoice {
   debtor    Debtor  @relation(fields: [debtorId], references: [id])
 
   invoiceLines SalesInvoiceLine[]
-  transactions Transaction[]
+  transactions transaction[]
 }
 
 model SalesInvoiceLine {
@@ -132,7 +132,7 @@ model PurchaseInvoice {
   creditor  Creditor @relation(fields: [creditorId], references: [id])
 
   invoiceLines PurchaseInvoiceLine[]
-  transactions Transaction[]
+  transactions transaction[]
 }
 
 model PurchaseInvoiceLine {
@@ -177,6 +177,7 @@ model Debtor {
 
   company       Company        @relation(fields: [companyId], references: [id])
   salesInvoices SalesInvoice[]
+  transactions  transaction[]
 }
 
 model Creditor {
@@ -204,6 +205,7 @@ model Creditor {
 
   company          Company           @relation(fields: [companyId], references: [id])
   purchaseInvoices PurchaseInvoice[]
+  transactions     transaction[]
 }
 
 model Ledger {
@@ -217,37 +219,45 @@ model Ledger {
   userId Int?
   user   User? @relation(fields: [userId], references: [id], onDelete: SetNull)
 
-  lines transactionLine[]
+  lines transaction[]
 }
 
-model Transaction {
-  id          Int      @id @default(autoincrement())
-  date        DateTime
-  description String
-  reference   String
-  amount      Decimal
-  type        String //negative or positive amount
+model TransactionHeader {
+  id        Int      @id @default(autoincrement())
+  date      DateTime
+  totalPre  Decimal
+  totalPost Decimal
 
-  salesInvoiceId Int?
-  salesInvoice   SalesInvoice? @relation(fields: [salesInvoiceId], references: [id])
+  vatAmount Decimal
+  TotalIncl Decimal
 
-  purchaseInvoiceId Int?
-  purchaseInvoice   PurchaseInvoice? @relation(fields: [purchaseInvoiceId], references: [id])
-
-  lines transactionLine[]
+  lines transaction[]
 }
 
-model transactionLine {
+model transaction {
   id Int @id @default(autoincrement())
 
-  transactionId Int
-  transaction   Transaction @relation(fields: [transactionId], references: [id])
+  transactionHeader TransactionHeader @relation(fields: [id], references: [id])
 
-  ledgerId Int
+  debtorId   Int?
+  creditorId Int?
+  debtor     Debtor?   @relation(fields: [debtorId], references: [id], onDelete: SetNull)
+  creditor   Creditor? @relation(fields: [creditorId], references: [id], onDelete: SetNull)
+
+  amount      Decimal
+  VAT         VAT
+  vatAmount   Decimal
+  type        String //negative or positive amount
+  description String
+
+  ledgerId Int //if not creditor or debitor then make the input for it disabled
   ledger   Ledger @relation(fields: [ledgerId], references: [id])
 
-  type   String
-  amount Decimal
+  salesInvoiceId Int?
+  salesInvoice   SalesInvoice? @relation(fields: [salesInvoiceId], references: [id], onDelete: SetNull)
+
+  purchaseInvoiceId Int?
+  purchaseInvoice   PurchaseInvoice? @relation(fields: [purchaseInvoiceId], references: [id], onDelete: SetNull)
 }
 
 enum VAT {

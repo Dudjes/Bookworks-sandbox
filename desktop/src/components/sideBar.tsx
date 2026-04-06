@@ -31,7 +31,7 @@ export default function SideBar() {
         { label: "Debiteuren", link: "/debitors", icon: <FiUsers size={18} /> },
         { label: "Inkoopfacturen", link: "/purchase-invoices", icon: <FiDownload size={18} /> },
         { label: "Crediteuren", link: "/creditor", icon: <FiUpload size={18} /> },
-        { label: "Transacties", link: "/", icon: <FiRepeat size={18} /> },
+        { label: "Transacties", link: "/transactions", icon: <FiRepeat size={18} /> },
         { label: "BTW-Aangifte", link: "/", icon: <FiPercent size={18} /> },
         { label: "Rapportages", link: "/", icon: <FiBarChart2 size={18} /> },
         { label: "Grootboek", link: "/ledger", icon: <FiBookOpen size={18} /> },

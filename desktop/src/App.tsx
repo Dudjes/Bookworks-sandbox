@@ -8,6 +8,7 @@ import SideBar from "./components/sideBar";
 import Settings from "./pages/settings";
 import Creditor from "./pages/creditor.tsx";
 import Ledger from "./pages/ledger.tsx";
+import Transaction from "./pages/transaction.tsx";
 function AppShell() {
   const location = useLocation();
   const showSidebar = location.pathname !== "/";
@@ -22,6 +23,7 @@ function AppShell() {
           <Route path="/purchase-invoices" element={<PurchaseInvoices />} />
           <Route path="/debitors"          element={<Debitors />} />
           <Route path="/creditor"          element={<Creditor />} />
+          <Route path="/transaction"       element={<Transaction />} />
           <Route path="/ledger"            element={<Ledger />} />
           <Route path="/settings"          element={<Settings />} />
         </Routes>
