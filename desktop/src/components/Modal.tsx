@@ -17,8 +17,9 @@ export default function Modal({
   width = "65vw",
   height = "auto",
 }: ModalProps) {
+  const isFullWidth = width === "100vw" || width === "100%" || width === "90vw";
   const modalContentStyle: React.CSSProperties = {
-    width: `clamp(320px, ${width}, 960px)`,
+    width: isFullWidth ? width : `clamp(320px, ${width}, 960px)`,
     height,
   };
 

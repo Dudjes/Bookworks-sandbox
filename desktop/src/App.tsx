@@ -23,7 +23,7 @@ function AppShell() {
           <Route path="/purchase-invoices" element={<PurchaseInvoices />} />
           <Route path="/debitors"          element={<Debitors />} />
           <Route path="/creditor"          element={<Creditor />} />
-          <Route path="/transaction"       element={<Transaction />} />
+          <Route path="/transactions"       element={<Transaction />} />
           <Route path="/ledger"            element={<Ledger />} />
           <Route path="/settings"          element={<Settings />} />
         </Routes>
