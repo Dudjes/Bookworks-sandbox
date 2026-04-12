@@ -1,0 +1,379 @@
+.transactionFormContainer {
+  width: 100%;
+  padding: 24px;
+  background-color: #f8fafc;
+}
+
+.formHeader {
+  margin-bottom: 20px;
+}
+
+.formHeader h2 {
+  font-size: 24px;
+  font-weight: 600;
+  color: #111827;
+  margin: 0;
+}
+
+.headerInfo {
+  display: flex;
+  gap: 12px;
+  background: white;
+  padding: 16px 20px;
+  border-radius: 8px;
+  margin-bottom: 20px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+.headerField {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.headerField label {
+  font-weight: 500;
+  color: #111827;
+  min-width: 60px;
+  font-size: 13px;
+}
+
+.headerInput {
+  flex: 1;
+  max-width: 150px;
+  padding: 8px 10px;
+  border: 1px solid #e5e7eb;
+  border-radius: 6px;
+  font-size: 13px;
+  box-sizing: border-box;
+  font-family: inherit;
+  background-color: white;
+  color: #111827;
+  transition: border-color 0.2s, box-shadow 0.2s;
+}
+
+.headerInput:focus {
+  outline: none;
+  border-color: #1e3a8a;
+  box-shadow: 0 0 0 3px rgba(30, 58, 138, 0.1);
+}
+
+.tableContainer {
+  background: white;
+  border-radius: 8px;
+  overflow: visible;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+  margin-bottom: 20px;
+  position: relative;
+  z-index: 30;
+}
+
+.transactionTable {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 14px;
+  table-layout: fixed;
+}
+
+.transactionTable thead th {
+  padding: 12px 8px;
+  text-align: left;
+  color: white;
+  font-weight: 600;
+  background-color: #1e3a8a;
+  border-bottom: 2px solid #1e40af;
+}
+
+.transactionTable thead th:nth-child(1) {
+  width: 17%;
+}
+
+.transactionTable thead th:nth-child(2) {
+  width: 14%;
+}
+
+.transactionTable thead th:nth-child(3) {
+  width: 14%;
+}
+
+.transactionTable thead th:nth-child(4) {
+  width: 10%;
+}
+
+.transactionTable thead th:nth-child(5) {
+  width: 9%;
+}
+
+.transactionTable thead th:nth-child(6) {
+  width: 8%;
+}
+
+.transactionTable thead th:nth-child(7) {
+  width: 7%;
+}
+
+.transactionTable thead th:nth-child(8) {
+  width: 7%;
+}
+
+.transactionTable thead th:nth-child(9) {
+  width: 7%;
+}
+
+.transactionTable thead th:nth-child(10) {
+  width: 5%;
+}
+
+.transactionTable tbody tr {
+  border-bottom: 1px solid #e5e7eb;
+  transition: background-color 0.2s;
+}
+
+.transactionTable tbody tr:hover {
+  background-color: #f0f4f8;
+}
+
+.transactionTable tbody tr:last-child {
+  border-bottom: none;
+}
+
+.tableRow td {
+  padding: 8px;
+  vertical-align: middle;
+  position: relative;
+}
+
+.input,
+.select {
+  position: relative;
+  z-index: 1;
+  width: 100%;
+  padding: 12px 16px;
+  border: 1px solid #e5e7eb;
+  border-radius: 6px;
+  font-size: 15px;
+  box-sizing: border-box;
+  font-family: inherit;
+  background-color: white;
+  color: #111827;
+  transition: border-color 0.2s, box-shadow 0.2s;
+  min-height: 44px;
+}
+
+.input:focus,
+.select:focus {
+  z-index: 40;
+  outline: none;
+  border-color: #1e3a8a;
+  box-shadow: 0 0 0 3px rgba(30, 58, 138, 0.1);
+}
+
+.input:disabled,
+.select:disabled {
+  background-color: #f3f4f6;
+  color: #9ca3af;
+  cursor: not-allowed;
+  border-color: #e5e7eb;
+}
+
+.readOnly {
+  padding: 12px 16px;
+  color: #111827;
+  font-weight: 500;
+  background-color: #f0f4f8;
+  border-radius: 4px;
+}
+
+.deleteBtn {
+  padding: 6px 12px;
+  background-color: #dc2626;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  font-weight: 500;
+  transition: background-color 0.2s;
+  font-size: 16px;
+  line-height: 1;
+}
+
+.actionsCell {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  position: relative;
+}
+
+.invoiceIconBtn {
+  width: 30px;
+  height: 30px;
+  border: 1px solid #cbd5e1;
+  border-radius: 6px;
+  background: #f8fafc;
+  cursor: pointer;
+  font-size: 15px;
+  line-height: 1;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  transition: border-color 0.2s, background-color 0.2s;
+}
+
+.invoiceIconBtn:hover:not(:disabled) {
+  border-color: #1e3a8a;
+  background: #eff6ff;
+}
+
+.invoiceIconBtn:disabled {
+  cursor: not-allowed;
+  opacity: 0.45;
+}
+
+.invoicePickerPopover {
+  position: absolute;
+  right: 44px;
+  top: calc(100% + 6px);
+  z-index: 2000;
+  width: 240px;
+  background: #ffffff;
+  border: 1px solid #cbd5e1;
+  border-radius: 8px;
+  padding: 10px;
+  box-shadow: 0 8px 24px rgba(15, 23, 42, 0.12);
+}
+
+.invoicePickerLabel {
+  display: block;
+  font-size: 12px;
+  color: #475569;
+  margin-bottom: 6px;
+  font-weight: 600;
+}
+
+.invoicePickerSelect {
+  width: 100%;
+  min-height: 34px;
+  padding: 6px 8px;
+  border: 1px solid #cbd5e1;
+  border-radius: 6px;
+  background: #ffffff;
+  font-size: 13px;
+  color: #0f172a;
+}
+
+.deleteBtn:hover {
+  background-color: #b91c1c;
+}
+
+.buttonGroup {
+  display: flex;
+  justify-content: flex-start;
+  margin-bottom: 24px;
+}
+
+.addLineBtn {
+  padding: 10px 16px;
+  background-color: #3b82f6;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  font-weight: 500;
+  transition: background-color 0.2s;
+  font-size: 14px;
+}
+
+.addLineBtn:hover {
+  background-color: #2563eb;
+}
+
+.totalsSection {
+  background: white;
+  border-radius: 8px;
+  padding: 20px;
+  margin-bottom: 24px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+.totalRow {
+  display: flex;
+  justify-content: space-between;
+  padding: 12px 0;
+  font-size: 14px;
+  color: #111827;
+  border-bottom: 1px solid #e5e7eb;
+}
+
+.totalRow:last-child {
+  border-bottom: none;
+}
+
+.totalRow span:first-child {
+  font-weight: 500;
+  color: #6b7280;
+}
+
+.totalRow span:last-child {
+  font-weight: 600;
+}
+
+.totalRowHighlight {
+  display: flex;
+  justify-content: space-between;
+  padding: 12px 0;
+  font-size: 16px;
+  color: white;
+  background-color: #1e3a8a;
+  margin: 0 -20px -20px -20px;
+  padding: 16px 20px;
+  border-radius: 0 0 8px 8px;
+}
+
+.totalRowHighlight span:first-child {
+  font-weight: 600;
+  color: white;
+}
+
+.totalRowHighlight span:last-child {
+  font-weight: 700;
+  color: white;
+}
+
+.actionButtons {
+  display: flex;
+  justify-content: flex-end;
+  gap: 12px;
+}
+
+.cancelBtn {
+  padding: 12px 24px;
+  background-color: #e5e7eb;
+  color: #111827;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  font-weight: 500;
+  transition: background-color 0.2s;
+  font-size: 14px;
+}
+
+.cancelBtn:hover {
+  background-color: #d1d5db;
+}
+
+.saveBtn {
+  padding: 12px 24px;
+  background-color: #16a34a;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  font-weight: 500;
+  transition: background-color 0.2s;
+  font-size: 14px;
+}
+
+.saveBtn:hover {
+  background-color: #15803d;
+}

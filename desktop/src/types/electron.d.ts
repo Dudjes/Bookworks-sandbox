@@ -26,7 +26,13 @@ type IpcChannel =
   | "ledger:getLedgers"
   | "ledger:createLedger"
   | "ledger:deleteLedger"
-  | "ledger:updateLedger";
+  | "ledger:updateLedger"
+  | "transaction:createTransaction"
+  | "transaction:getTransactions"
+  | "transaction:getTransaction"
+  | "transaction:updateTransaction"
+  | "transaction:deleteTransaction"
+  | "transaction:getTransactionsByPeriod";
 
 interface Window {
   api?: {

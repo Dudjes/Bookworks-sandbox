@@ -15,10 +15,12 @@ model User {
   created_at DateTime  @default(now())
   updated_at DateTime?
 
-  salesInvoices    SalesInvoice[]    @relation("CreatedSalesInvoices")
-  purchaseInvoices PurchaseInvoice[] @relation("CreatedPurchaseInvoices")
-  userCompanies    UserCompany[]
-  ledgers          Ledger[]
+  salesInvoices      SalesInvoice[]      @relation("CreatedSalesInvoices")
+  purchaseInvoices   PurchaseInvoice[]   @relation("CreatedPurchaseInvoices")
+  userCompanies      UserCompany[]
+  ledgers            Ledger[]
+  transactionHeaders TransactionHeader[]
+  transactions       transaction[]
 }
 
 model Company {
@@ -39,11 +41,12 @@ model Company {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  users            UserCompany[]
-  debtors          Debtor[]
-  creditors        Creditor[]
-  salesInvoices    SalesInvoice[]
-  purchaseInvoices PurchaseInvoice[]
+  users              UserCompany[]
+  debtors            Debtor[]
+  creditors          Creditor[]
+  salesInvoices      SalesInvoice[]
+  purchaseInvoices   PurchaseInvoice[]
+  transactionHeaders TransactionHeader[]
 }
 
 model UserCompany {
@@ -129,7 +132,7 @@ model PurchaseInvoice {
 
   company   Company  @relation(fields: [companyId], references: [id])
   createdBy User     @relation("CreatedPurchaseInvoices", fields: [createdById], references: [id])
-  creditor  Creditor @relation(fields: [creditorId], references: [id])
+  creditor  Creditor @relation(fields: [creditorId], references: [id], onDelete: Restrict)
 
   invoiceLines PurchaseInvoiceLine[]
   transactions transaction[]
@@ -231,13 +234,22 @@ model TransactionHeader {
   vatAmount Decimal
   TotalIncl Decimal
 
+  userId    Int
+  companyId Int
+
+  user    User    @relation(fields: [userId], references: [id], onDelete: Restrict)
+  company Company @relation(fields: [companyId], references: [id], onDelete: Restrict)
+
   lines transaction[]
 }
 
 model transaction {
-  id Int @id @default(autoincrement())
+  id                  Int               @id @default(autoincrement())
+  transactionHeaderId Int
+  transactionHeader   TransactionHeader @relation(fields: [transactionHeaderId], references: [id], onDelete: Cascade)
 
-  transactionHeader TransactionHeader @relation(fields: [id], references: [id])
+  createdById Int
+  createdBy   User @relation(fields: [createdById], references: [id], onDelete: Restrict)
 
   debtorId   Int?
   creditorId Int?

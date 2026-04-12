@@ -313,30 +313,109 @@ export async function ensureDatabaseSchema() {
     );
   `);
 
+  // New transaction model tables (aligned with current Prisma schema)
   await prisma.$executeRawUnsafe(`
-    CREATE TABLE IF NOT EXISTS "Transaction" (
+    CREATE TABLE IF NOT EXISTS "TransactionHeader" (
       "id" INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,
       "date" DATETIME NOT NULL,
-      "description" TEXT NOT NULL,
-      "reference" TEXT NOT NULL
+      "totalPre" DECIMAL NOT NULL,
+      "totalPost" DECIMAL NOT NULL,
+      "vatAmount" DECIMAL NOT NULL,
+      "TotalIncl" DECIMAL NOT NULL,
+      "userId" INTEGER NOT NULL,
+      "companyId" INTEGER NOT NULL,
+      CONSTRAINT "TransactionHeader_userId_fkey"
+        FOREIGN KEY ("userId") REFERENCES "User"("id")
+        ON DELETE RESTRICT ON UPDATE CASCADE,
+      CONSTRAINT "TransactionHeader_companyId_fkey"
+        FOREIGN KEY ("companyId") REFERENCES "Company"("id")
+        ON DELETE RESTRICT ON UPDATE CASCADE
     );
   `);
 
   await prisma.$executeRawUnsafe(`
-    CREATE TABLE IF NOT EXISTS "transactionLine" (
+    CREATE TABLE IF NOT EXISTS "transaction" (
       "id" INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,
-      "transactionId" INTEGER NOT NULL,
-      "ledgerId" INTEGER NOT NULL,
-      "type" TEXT NOT NULL,
+      "transactionHeaderId" INTEGER NOT NULL,
+      "createdById" INTEGER NOT NULL,
+      "debtorId" INTEGER,
+      "creditorId" INTEGER,
       "amount" DECIMAL NOT NULL,
-      CONSTRAINT "transactionLine_transactionId_fkey"
-        FOREIGN KEY ("transactionId") REFERENCES "Transaction"("id")
+      "VAT" TEXT NOT NULL,
+      "vatAmount" DECIMAL NOT NULL,
+      "type" TEXT NOT NULL,
+      "description" TEXT NOT NULL,
+      "ledgerId" INTEGER NOT NULL,
+      "salesInvoiceId" INTEGER,
+      "purchaseInvoiceId" INTEGER,
+      CONSTRAINT "transaction_transactionHeaderId_fkey"
+        FOREIGN KEY ("transactionHeaderId") REFERENCES "TransactionHeader"("id")
         ON DELETE CASCADE ON UPDATE CASCADE,
-      CONSTRAINT "transactionLine_ledgerId_fkey"
+      CONSTRAINT "transaction_createdById_fkey"
+        FOREIGN KEY ("createdById") REFERENCES "User"("id")
+        ON DELETE RESTRICT ON UPDATE CASCADE,
+      CONSTRAINT "transaction_debtorId_fkey"
+        FOREIGN KEY ("debtorId") REFERENCES "Debtor"("id")
+        ON DELETE SET NULL ON UPDATE CASCADE,
+      CONSTRAINT "transaction_creditorId_fkey"
+        FOREIGN KEY ("creditorId") REFERENCES "Creditor"("id")
+        ON DELETE SET NULL ON UPDATE CASCADE,
+      CONSTRAINT "transaction_ledgerId_fkey"
         FOREIGN KEY ("ledgerId") REFERENCES "Ledger"("id")
-        ON DELETE RESTRICT ON UPDATE CASCADE
+        ON DELETE RESTRICT ON UPDATE CASCADE,
+      CONSTRAINT "transaction_salesInvoiceId_fkey"
+        FOREIGN KEY ("salesInvoiceId") REFERENCES "SalesInvoice"("id")
+        ON DELETE SET NULL ON UPDATE CASCADE,
+      CONSTRAINT "transaction_purchaseInvoiceId_fkey"
+        FOREIGN KEY ("purchaseInvoiceId") REFERENCES "PurchaseInvoice"("id")
+        ON DELETE SET NULL ON UPDATE CASCADE
     );
   `);
+
+  // Backfill for older transaction tables that may miss the new FK column.
+  try {
+    await prisma.$executeRawUnsafe(`
+      ALTER TABLE "transaction" ADD COLUMN "transactionHeaderId" INTEGER;
+    `);
+  } catch (e) {
+    // Column likely already exists, ignore error
+  }
+
+  // Backfill for TransactionHeader columns
+  const headerColumnsToEnsure = [
+    `ALTER TABLE "TransactionHeader" ADD COLUMN "userId" INTEGER;`,
+    `ALTER TABLE "TransactionHeader" ADD COLUMN "companyId" INTEGER;`,
+  ];
+
+  for (const statement of headerColumnsToEnsure) {
+    try {
+      await prisma.$executeRawUnsafe(statement);
+    } catch (e) {
+      // Column likely already exists, ignore error
+    }
+  }
+
+  // Backfill other transaction columns for databases created from older legacy table definitions.
+  const transactionColumnsToEnsure = [
+    `ALTER TABLE "transaction" ADD COLUMN "debtorId" INTEGER;`,
+    `ALTER TABLE "transaction" ADD COLUMN "creditorId" INTEGER;`,
+    `ALTER TABLE "transaction" ADD COLUMN "amount" DECIMAL;`,
+    `ALTER TABLE "transaction" ADD COLUMN "VAT" TEXT;`,
+    `ALTER TABLE "transaction" ADD COLUMN "vatAmount" DECIMAL;`,
+    `ALTER TABLE "transaction" ADD COLUMN "type" TEXT;`,
+    `ALTER TABLE "transaction" ADD COLUMN "ledgerId" INTEGER;`,
+    `ALTER TABLE "transaction" ADD COLUMN "createdById" INTEGER;`,
+    `ALTER TABLE "transaction" ADD COLUMN "salesInvoiceId" INTEGER;`,
+    `ALTER TABLE "transaction" ADD COLUMN "purchaseInvoiceId" INTEGER;`,
+  ];
+
+  for (const statement of transactionColumnsToEnsure) {
+    try {
+      await prisma.$executeRawUnsafe(statement);
+    } catch (e) {
+      // Column likely already exists, ignore error
+    }
+  }
 }
 
 /**
@@ -423,15 +502,6 @@ export async function addDefaultsForUser(userId: number) {
       VALUES (${l.number}, '${escape(l.name)}', '${l.type}', '${escape(l.category)}', 1, ${userId});
     `);
   }
-
-  // add a simple marker transaction for the user
-  await prisma.transaction.create({
-    data: {
-      date: new Date(),
-      description: `Initial ledger setup for user ${userId}`,
-      reference: `init-${userId}-${Date.now()}`,
-    },
-  });
 }
 
 export { prisma };

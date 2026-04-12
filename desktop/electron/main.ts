@@ -9,6 +9,8 @@ import * as debitor from "./database/debitor.js";
 import * as creditor from "./database/creditor.js";
 import * as invoice from "./database/invoice.js"
 import * as ledger from "./database/ledger.js";
+import * as transaction from "./database/transaction.js";
+import type { TransactionHeaderInput, TransactionLineInput } from "./database/transaction.js";
 import { VAT, InvoiceStatus } from "@prisma/client";
 
 const __filename = fileURLToPath(import.meta.url);
@@ -302,6 +304,65 @@ const handlers: Record<string, IpcHandler> = {
       category: string;
     };
   }) => ledger.updateLedger(payload.userId, payload.ledgerId, payload.ledger),
+
+  "transaction:createTransaction": (payload: {
+    userId: number;
+    transactionData: {
+      date: string;
+      totalPre: number;
+      totalPost: number;
+      vatAmount: number;
+      TotalIncl: number;
+      userId: number;
+      companyId: number;
+      lines: {
+        debtorId?: number | null;
+        creditorId?: number | null;
+        amount: number;
+        VAT: VAT;
+        vatAmount: number;
+        type: "betalen" | "ontvangen";
+        description: string;
+        ledgerId: number;
+        createdById: number;
+        salesInvoiceId?: number | null;
+        purchaseInvoiceId?: number | null;
+      }[];
+    };
+  }) => transaction.createTransaction(payload.userId, payload.transactionData),
+  "transaction:getTransactions": (userId: number) => transaction.getTransactions(userId),
+  "transaction:getTransaction": (transactionId: number) => transaction.getTransaction(transactionId),
+  "transaction:updateTransaction": (payload: {
+    transactionHeaderId: number;
+    transactionData: {
+      date: string;
+      totalPre: number;
+      totalPost: number;
+      vatAmount: number;
+      TotalIncl: number;
+      userId: number;
+      companyId: number;
+      lines: {
+        debtorId?: number | null;
+        creditorId?: number | null;
+        amount: number;
+        VAT: VAT;
+        vatAmount: number;
+        type: "betalen" | "ontvangen";
+        description: string;
+        ledgerId: number;
+        createdById: number;
+        salesInvoiceId?: number | null;
+        purchaseInvoiceId?: number | null;
+      }[];
+    };
+  }) => transaction.updateTransaction(payload.transactionHeaderId, payload.transactionData),
+  "transaction:deleteTransaction": (transactionId: number) => transaction.deleteTransaction(transactionId),
+  "transaction:getTransactionsByPeriod": (payload: {
+    userId: number;
+    startDate: string;
+    endDate: string;
+  }) => transaction.getTransactionsByPeriod(payload.userId, payload.startDate, payload.endDate),
 };
 
 for (const [channel, handler] of Object.entries(handlers)) {
