@@ -9,6 +9,7 @@ import Settings from "./pages/settings";
 import Creditor from "./pages/creditor.tsx";
 import Ledger from "./pages/ledger.tsx";
 import Transaction from "./pages/transaction.tsx";
+import Report from "./pages/report.tsx";
 function AppShell() {
   const location = useLocation();
   const showSidebar = location.pathname !== "/";
@@ -25,6 +26,7 @@ function AppShell() {
           <Route path="/creditor"          element={<Creditor />} />
           <Route path="/transactions"       element={<Transaction />} />
           <Route path="/ledger"            element={<Ledger />} />
+          <Route path="/report"            element={<Report />} />
           <Route path="/settings"          element={<Settings />} />
         </Routes>
       </main>

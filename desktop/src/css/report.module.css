@@ -1,0 +1,193 @@
+.mainContainer *{
+    color: black;
+}
+
+.mainContainer{
+    display: flex;
+    flex-direction: column;
+    margin: 1vw;
+    gap: 5vh;
+}
+
+.body{
+    display: flex;
+    flex-direction: column;
+    gap: 3vh;
+}
+
+.period{
+    display: flex;
+    flex-direction: row;
+    gap: 1vw;
+    align-items: center;
+}
+
+select {
+    padding: 8px 12px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    font-size: 14px;
+    cursor: pointer;
+    background-color: white;
+    color: black;
+}
+
+.tabsContainer{
+    display: flex;
+    flex-direction: row;
+    gap: 2vw;
+    justify-content: space-between;
+}
+
+.tab{
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    border: 1px solid lightgray;
+    border-radius: 6px;
+    background-color: white;
+    height: 18vh;
+    width: 40vw;
+    max-height: 180px;
+    padding-left: 2vw;
+    gap: 1vh;
+}
+
+.tab:hover{
+    background-color: rgb(235, 235, 235);
+    cursor: pointer;
+}
+
+.tabTitle{
+    font-weight: 500;
+    font-size: 1.1rem;
+}
+
+.reportContainer{
+    background-color: white;
+    padding: 3vw;
+    border-radius: 8px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.reportHeader{
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 3vh;
+    border-bottom: 2px solid #f0f0f0;
+    padding-bottom: 2vh;
+}
+
+.reportHeader h2{
+    margin: 0;
+    font-size: 1.5rem;
+}
+
+.exportBtn{
+    background-color: white;
+    border: 1px solid #ddd;
+    padding: 8px 16px;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 14px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.exportBtn:hover{
+    background-color: #f5f5f5;
+}
+
+.section{
+    margin-bottom: 4vh;
+}
+
+.sectionTitle{
+    color: #2563eb;
+    font-size: 1.1rem;
+    font-weight: 600;
+    margin-bottom: 1.5vh;
+    margin: 0 0 1.5vh 0;
+}
+
+.section:nth-of-type(2) .sectionTitle{
+    color: #dc2626;
+}
+
+.lineItem{
+    display: flex;
+    justify-content: space-between;
+    padding: 0.8vh 0;
+    border-bottom: 1px solid #f0f0f0;
+    font-size: 0.95rem;
+}
+
+.lineItem span:last-child{
+    text-align: right;
+    min-width: 100px;
+}
+
+.total{
+    display: flex;
+    justify-content: space-between;
+    padding: 1.2vh 1vw;
+    background-color: #eff6ff;
+    font-weight: 600;
+    border-radius: 4px;
+    margin-top: auto;
+}
+
+.total span:last-child{
+    text-align: right;
+    min-width: 100px;
+}
+
+.totalNegative{
+    display: flex;
+    justify-content: space-between;
+    padding: 1.2vh 1vw;
+    background-color: #fef2f2;
+    font-weight: 600;
+    border-radius: 4px;
+    margin-top: 1vh;
+}
+
+.totalNegative span:last-child{
+    text-align: right;
+    min-width: 100px;
+}
+
+.netProfit{
+    display: flex;
+    justify-content: space-between;
+    padding: 1.5vh 1vw;
+    background-color: #f0fdf4;
+    border: 1px solid #86efac;
+    border-radius: 4px;
+    font-weight: 600;
+    font-size: 1.05rem;
+    margin-top: 2vh;
+}
+
+.netProfit span:last-child{
+    text-align: right;
+    min-width: 100px;
+    color: #16a34a;
+}
+
+.balanceContainer{
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 4vw;
+}
+
+.balanceColumn{
+    display: flex;
+    flex-direction: column;
+}
+
+.balanceColumn .sectionTitle{
+    color: #2563eb;
+}

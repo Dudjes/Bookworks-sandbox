@@ -32,7 +32,11 @@ type IpcChannel =
   | "transaction:getTransaction"
   | "transaction:updateTransaction"
   | "transaction:deleteTransaction"
-  | "transaction:getTransactionsByPeriod";
+  | "transaction:getTransactionsByPeriod"
+  | "report:getReportByYear"
+  | "report:getReportByQuarter"
+  | "report:getBalansByYear"
+  | "report:getBalansByPeriod";
 
 interface Window {
   api?: {

@@ -206,7 +206,7 @@ tbody{
     border-radius: 8px;
     border: none;
     background: var(--color-primary-main);
-    color: white;
+    color: white !important;
     cursor: pointer;
     font-weight: 500;
 }

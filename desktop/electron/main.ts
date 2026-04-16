@@ -10,6 +10,7 @@ import * as creditor from "./database/creditor.js";
 import * as invoice from "./database/invoice.js"
 import * as ledger from "./database/ledger.js";
 import * as transaction from "./database/transaction.js";
+import * as report from "./database/report.js";
 import type { TransactionHeaderInput, TransactionLineInput } from "./database/transaction.js";
 import { VAT, InvoiceStatus } from "@prisma/client";
 
@@ -363,6 +364,25 @@ const handlers: Record<string, IpcHandler> = {
     startDate: string;
     endDate: string;
   }) => transaction.getTransactionsByPeriod(payload.userId, payload.startDate, payload.endDate),
+
+  "report:getReportByYear": (payload: {
+    year: number;
+    userId: number;
+  }) => report.getReportByYear(payload.year, payload.userId),
+  "report:getReportByQuarter": (payload: {
+    year: number;
+    quarter: number;
+    userId: number;
+  }) => report.getReportByQuarter(payload.year, payload.quarter, payload.userId),
+  "report:getBalansByYear": (payload: {
+    year: number;
+    userId: number;
+  }) => report.getBalansByYear(payload.year, payload.userId),
+  "report:getBalansByPeriod": (payload: {
+    year: number;
+    quarter: number;
+    userId: number;
+  }) => report.getBalansByPeriod(payload.year, payload.quarter, payload.userId),
 };
 
 for (const [channel, handler] of Object.entries(handlers)) {
