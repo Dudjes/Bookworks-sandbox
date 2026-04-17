@@ -281,3 +281,59 @@ export async function getTransactionsByPeriod(
   // TODO: Implement get transactions by period logic
   throw new Error("Not implemented");
 }
+
+export async function getLedgerBalance(ledgerId: number) {
+  try {
+    const transactions = await prisma.transaction.findMany({
+      where: { ledgerId },
+      select: {
+        amount: true,
+        type: true,
+      }
+    });
+
+    // Calculate balance: ontvangen (positive) - betalen (negative)
+    const balance = transactions.reduce((total, transaction) => {
+      const amount = Number(transaction.amount);
+      if (transaction.type === "ontvangen") {
+        return total + amount;
+      } else {
+        return total - amount;
+      }
+    }, 0);
+
+    return balance;
+  } catch (error) {
+    throw new Error(`transaction:getLedgerBalance: ${error}`);
+  }
+}
+
+export async function getLedgerTransactions(ledgerId: number) {
+  try {
+    const lines = await prisma.transaction.findMany({
+      where: { ledgerId },
+      include: {
+        transactionHeader: true,
+        debtor: true,
+        creditor: true,
+      },
+      orderBy: { transactionHeader: { date: 'desc' } }
+    });
+
+    return lines.map(line => ({
+      ...line,
+      amount: Number(line.amount),
+      vatAmount: Number(line.vatAmount),
+      transactionHeader: {
+        ...line.transactionHeader,
+        totalPre: Number(line.transactionHeader.totalPre),
+        totalPost: Number(line.transactionHeader.totalPost),
+        vatAmount: Number(line.transactionHeader.vatAmount),
+        TotalIncl: Number(line.transactionHeader.TotalIncl),
+        date: line.transactionHeader.date.toISOString(),
+      }
+    }));
+  } catch (error) {
+    throw new Error(`transaction:getLedgerTransactions: ${error}`);
+  }
+}

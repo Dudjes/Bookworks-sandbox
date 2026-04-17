@@ -474,7 +474,7 @@ export default function Invoices(){
                         {invoices.map((invoice) => (
                             <tr className={styles.tableInfoRow} key={invoice.id}>
                                 <td>{invoice.invoiceNumber}</td>
-                                <td>{(invoice as any).relation?.companyName || 'N/A'}</td>
+                                <td>{invoice.debtor?.companyName || 'N/A'}</td>
                                 <td>{new Date(invoice.invoiceDate).toLocaleDateString('nl-NL')}</td>
                                 <td>{new Date(invoice.dueDate).toLocaleDateString('nl-NL')}</td>
                                 <td>€ {Number(invoice.subTotal).toFixed(2)}</td>

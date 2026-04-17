@@ -154,6 +154,15 @@ export async function getSalesInvoices(userId: number) {
         subTotal: Number(invoice.subTotal),
         vatTotal: Number(invoice.vatTotal),
         total: Number(invoice.total),
+        debtor: invoice.debtor ? {
+            id: invoice.debtor.id,
+            companyName: invoice.debtor.companyName,
+            address: invoice.debtor.address,
+            postcode: invoice.debtor.postcode,
+            city: invoice.debtor.city,
+            country: invoice.debtor.country,
+            btwNumber: invoice.debtor.btwNumber,
+        } : null,
     }));
 }
 
@@ -268,6 +277,15 @@ export async function getSalesInvoice(invoiceId: number) {
         subTotal: Number(invoice.subTotal),
         vatTotal: Number(invoice.vatTotal),
         total: Number(invoice.total),
+        debtor: invoice.debtor ? {
+            id: invoice.debtor.id,
+            companyName: invoice.debtor.companyName,
+            address: invoice.debtor.address,
+            postcode: invoice.debtor.postcode,
+            city: invoice.debtor.city,
+            country: invoice.debtor.country,
+            btwNumber: invoice.debtor.btwNumber,
+        } : null,
     }));
 }
 

@@ -177,6 +177,25 @@ select {
     color: #16a34a;
 }
 
+.netLoss{
+    display: flex;
+    justify-content: space-between;
+    padding: 1.5vh 1vw;
+    background-color: #fef2f2;
+    border: 1px solid #fca5a5;
+    border-radius: 4px;
+    font-weight: 600;
+    font-size: 1.05rem;
+    margin-top: 2vh;
+    color: #dc2626;
+}
+
+.netLoss span:last-child{
+    text-align: right;
+    min-width: 100px;
+    color: #dc2626;
+}
+
 .balanceContainer{
     display: grid;
     grid-template-columns: 1fr 1fr;

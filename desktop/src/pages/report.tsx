@@ -266,8 +266,8 @@ export default function Report(){
                                         </div>
                                     </div>
 
-                                    <div className={styles.netProfit}>
-                                        <span>Netto winst</span>
+                                    <div className={report.netProfit < 0 ? styles.netLoss : styles.netProfit}>
+                                        <span>{report.netProfit < 0 ? 'Netto loss' : 'Netto winst'}</span>
                                         <span>€ {report.netProfit.toFixed(3)}</span>
                                     </div>
                                 </>

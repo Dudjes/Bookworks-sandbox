@@ -29,7 +29,7 @@ interface Invoice {
     phone?: string;
     email?: string;
   };
-  relation?: {
+  debtor?: {
     companyName: string;
     address?:  string;
     postcode?: string;
@@ -57,9 +57,9 @@ export function InvoicePDF({ invoice }: { invoice: Invoice }) {
                             </View>
                             )}
                             <View style={styles.recieverInfo}>
-                                <Text>{invoice.relation?.companyName || "Bedrijf naam"}</Text>
-                                <Text>{invoice.relation?.address || "adres" } {invoice.relation?.postcode || "postcode"}</Text>
-                                <Text>{invoice.relation?.city || "stad" } {invoice.relation?.country || "land"}</Text>
+                                <Text>{invoice.debtor?.companyName || "Bedrijf naam"}</Text>
+                                <Text>{invoice.debtor?.address || "adres" } {invoice.debtor?.postcode || "postcode"}</Text>
+                                <Text>{invoice.debtor?.city || "stad" } {invoice.debtor?.country || "land"}</Text>
                             </View>
                         </View>
                         <View style={styles.senderInfoContainer}>

@@ -141,8 +141,8 @@ export default function Transaction(){
                                         <p></p>
                                     }
                                 </td>
-                                <td className={transaction.amount > 0 ? styles.positive : styles.negative}>
-                                    €{transaction.amount.toFixed(2)}
+                                <td className={transaction.type === 'betalen' ? styles.negative : styles.positive}>
+                                    {transaction.type === 'betalen' ? '-' : ''}€{transaction.amount.toFixed(2)}
                                 </td>
                                 <td className={styles.actionsContainer}>
                                     <FaEye 
@@ -244,8 +244,8 @@ export default function Transaction(){
                             </div>
                             <div className={styles.detailRow}>
                                 <span className={styles.label}>Bedrag:</span>
-                                <span className={selectedTransaction.amount > 0 ? styles.positive : styles.negative}>
-                                    €{selectedTransaction.amount.toFixed(2)}
+                                <span className={selectedTransaction.type === 'betalen' ? styles.negative : styles.positive}>
+                                    {selectedTransaction.type === 'betalen' ? '-' : ''}€{selectedTransaction.amount.toFixed(2)}
                                 </span>
                             </div>
                             <div className={styles.detailRow}>

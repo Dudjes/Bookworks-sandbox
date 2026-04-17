@@ -17,7 +17,8 @@ type ledgerForm = {
     name: string,
     type: string,
     category: string,
-    systemMade: boolean
+    systemMade: boolean,
+    balance?: number
 }
 
 export default function Ledger(){
@@ -178,8 +179,22 @@ export default function Ledger(){
     const getLedgers = async () => {
         try {
             const ledgerList = await window.api?.invoke("ledger:getLedgers", user?.id);
-            setLedgers(ledgerList as ledgerForm[]);
-            console.log(ledgerList);
+            
+            // Fetch balance for each ledger
+            const ledgersWithBalance = await Promise.all(
+                (ledgerList as ledgerForm[]).map(async (ledger) => {
+                    try {
+                        const balance = (await window.api?.invoke("transaction:getLedgerBalance", ledger.id)) as number;
+                        return { ...ledger, balance: balance || 0 };
+                    } catch (error) {
+                        console.error(`Failed to fetch balance for ledger ${ledger.id}:`, error);
+                        return { ...ledger, balance: 0 };
+                    }
+                })
+            );
+            
+            setLedgers(ledgersWithBalance);
+            console.log(ledgersWithBalance);
         } catch (error) {
             console.error("ledger:getLedgers failed", error);
         }
@@ -189,12 +204,27 @@ export default function Ledger(){
         getLedgers();
     },[user?.id]);
 
+    // Helper function to format currency
+    const formatCurrency = (amount: number): string => {
+        return new Intl.NumberFormat('nl-NL', {
+            style: 'currency',
+            currency: 'EUR',
+            minimumFractionDigits: 2,
+            maximumFractionDigits: 2,
+        }).format(amount);
+    };
+
     // group ledgers by category
     const grouped = ledgers.reduce((acc, ledger) => {
         if (!acc[ledger.category]) acc[ledger.category] = [];
         acc[ledger.category].push(ledger);
         return acc;
     }, {} as Record<string, ledgerForm[]>);
+
+    // Calculate category totals
+    const getCategoryTotal = (items: ledgerForm[]): number => {
+        return items.reduce((sum, ledger) => sum + (ledger.balance || 0), 0);
+    };
 
     return(
         <div>
@@ -286,7 +316,7 @@ export default function Ledger(){
                     <div key={category} className={styles.categorySection}>
                         <div className={styles.categoryHeader}>
                             <h3>▸ {category}</h3>
-                            <span>Total: € 0,00</span>
+                            <span>Total: {formatCurrency(getCategoryTotal(items))}</span>
                         </div>
                         <table className={styles.table}>
                             <colgroup>
@@ -311,7 +341,7 @@ export default function Ledger(){
                                         <td>{ledger.number}</td>
                                         <td><span>{ledger.name}</span> {ledger.systemMade && <span className={styles.badge}>Systeem</span>}</td>
                                         <td>{ledger.type === 'B' ? 'Debet' : 'Credit'}</td>
-                                        <td>€ 0,00</td>
+                                        <td>{formatCurrency(ledger.balance || 0)}</td>
                                         <td>
                                             <button 
                                                 className={styles.iconBtn} 

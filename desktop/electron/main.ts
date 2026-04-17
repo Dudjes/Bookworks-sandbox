@@ -364,6 +364,8 @@ const handlers: Record<string, IpcHandler> = {
     startDate: string;
     endDate: string;
   }) => transaction.getTransactionsByPeriod(payload.userId, payload.startDate, payload.endDate),
+  "transaction:getLedgerBalance": (ledgerId: number) => transaction.getLedgerBalance(ledgerId),
+  "transaction:getLedgerTransactions": (ledgerId: number) => transaction.getLedgerTransactions(ledgerId),
 
   "report:getReportByYear": (payload: {
     year: number;

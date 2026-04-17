@@ -33,6 +33,8 @@ type IpcChannel =
   | "transaction:updateTransaction"
   | "transaction:deleteTransaction"
   | "transaction:getTransactionsByPeriod"
+  | "transaction:getLedgerBalance"
+  | "transaction:getLedgerTransactions"
   | "report:getReportByYear"
   | "report:getReportByQuarter"
   | "report:getBalansByYear"
